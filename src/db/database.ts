@@ -51,7 +51,7 @@ export async function getDatabase(): Promise<Database> {
   if (db) return db;
 
   const SQL = await initSqlJs({
-    locateFile: () => '/sql-wasm.wasm',
+    locateFile: () => `${import.meta.env.BASE_URL}sql-wasm.wasm`,
   });
 
   const saved = await loadFromIndexedDB();
@@ -88,7 +88,7 @@ export async function exportDatabase(): Promise<Uint8Array> {
 
 export async function importDatabase(data: Uint8Array): Promise<void> {
   const SQL = await initSqlJs({
-    locateFile: () => '/sql-wasm.wasm',
+    locateFile: () => `${import.meta.env.BASE_URL}sql-wasm.wasm`,
   });
   if (db) db.close();
   db = new SQL.Database(data);

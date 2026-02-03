@@ -20,7 +20,8 @@
       "Bash(npx gh-pages -d dist)",
       "Bash(\"C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe\" api repos/masonjarrr/goal-game/pages -X PUT -f build_type=legacy -f source[branch]=gh-pages -f source[path]=/)",
       "Bash(\"C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe\" api repos/masonjarrr/goal-game/pages)",
-      "WebFetch(domain:masonjarrr.github.io)"
+      "WebFetch(domain:masonjarrr.github.io)",
+      "Bash(\"C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe\" api repos/masonjarrr/goal-game/pages/builds --jq '.[0] | {status: .status, created_at: .created_at}')"
     ]
   }
 }

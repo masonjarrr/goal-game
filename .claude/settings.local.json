@@ -15,7 +15,12 @@
       "Bash(npm run build:*)",
       "Bash(git init:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(\"C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe\" api repos/masonjarrr/goal-game/git/refs/heads/gh-pages -X DELETE)",
+      "Bash(npx gh-pages -d dist)",
+      "Bash(\"C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe\" api repos/masonjarrr/goal-game/pages -X PUT -f build_type=legacy -f source[branch]=gh-pages -f source[path]=/)",
+      "Bash(\"C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe\" api repos/masonjarrr/goal-game/pages)",
+      "WebFetch(domain:masonjarrr.github.io)"
     ]
   }
 }

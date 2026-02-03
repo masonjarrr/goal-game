@@ -5,6 +5,7 @@ import { useCharacter } from './hooks/useCharacter';
 import { useQuests } from './hooks/useQuests';
 import { useBuffs } from './hooks/useBuffs';
 import { usePlanner } from './hooks/usePlanner';
+import { useAutoBackup } from './hooks/useAutoBackup';
 import { Sidebar } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
 import { LevelUpModal } from './components/layout/LevelUpModal';
@@ -12,6 +13,7 @@ import { CharacterScreen } from './components/character/CharacterScreen';
 import { QuestLog } from './components/quests/QuestLog';
 import { BuffTracker } from './components/buffs/BuffTracker';
 import { PlannerViewComponent } from './components/planner/PlannerView';
+import { BackupSettings } from './components/settings/BackupSettings';
 import { exportDatabase, importDatabase } from './db/database';
 import { RPGButton } from './components/ui/RPGButton';
 import { GuideButton } from './components/layout/GuideModal';
@@ -41,6 +43,8 @@ function AppContent({ activeTab, setActiveTab }: { activeTab: TabId; setActiveTa
   const quests = useQuests({ grantXP: char.grantXP });
   const buffs = useBuffs({ grantXP: char.grantXP });
   const planner = usePlanner({ grantXP: char.grantXP });
+  const autoBackup = useAutoBackup();
+  const [showBackupSettings, setShowBackupSettings] = useState(false);
 
   // Refresh data on tab change
   useEffect(() => {
@@ -157,13 +161,20 @@ function AppContent({ activeTab, setActiveTab }: { activeTab: TabId; setActiveTa
         )}
 
         {/* Data management footer */}
-        <div style={{ marginTop: 40, paddingTop: 20, borderTop: '1px solid var(--border-color)', display: 'flex', gap: 10, justifyContent: 'center' }}>
-          <RPGButton size="small" variant="ghost" onClick={handleExport}>
-            Export Save
-          </RPGButton>
-          <RPGButton size="small" variant="ghost" onClick={handleImport}>
-            Import Save
-          </RPGButton>
+        <div style={{ marginTop: 40, paddingTop: 20, borderTop: '1px solid var(--border-color)' }}>
+          {showBackupSettings && <BackupSettings />}
+
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <RPGButton size="small" variant="ghost" onClick={() => setShowBackupSettings(!showBackupSettings)}>
+              {showBackupSettings ? 'Hide Cloud Backup' : 'Cloud Backup'}
+            </RPGButton>
+            <RPGButton size="small" variant="ghost" onClick={handleExport}>
+              Export Save
+            </RPGButton>
+            <RPGButton size="small" variant="ghost" onClick={handleImport}>
+              Import Save
+            </RPGButton>
+          </div>
         </div>
       </main>
 
@@ -184,6 +195,25 @@ function AppContent({ activeTab, setActiveTab }: { activeTab: TabId; setActiveTa
       )}
 
       <GuideButton />
+
+      {/* Auto-backup notification */}
+      {autoBackup.message && (
+        <div style={{
+          position: 'fixed',
+          bottom: 20,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          padding: '10px 20px',
+          background: autoBackup.status === 'error' ? 'rgba(231, 76, 60, 0.9)' : 'rgba(46, 204, 113, 0.9)',
+          color: '#fff',
+          borderRadius: 8,
+          fontSize: '0.9rem',
+          zIndex: 1000,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+        }}>
+          {autoBackup.message}
+        </div>
+      )}
     </div>
   );
 }

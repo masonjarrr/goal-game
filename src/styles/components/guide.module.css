@@ -1,0 +1,223 @@
+.guideButton {
+  position: fixed;
+  bottom: 90px;
+  right: 16px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--bg-medium);
+  border: 1px solid var(--border-gold);
+  color: var(--gold);
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 150;
+  transition: all var(--transition-fast);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+.guideButton:hover {
+  background: var(--gold-dim);
+  border-color: var(--gold);
+  box-shadow: 0 0 12px var(--gold-glow);
+}
+
+@media (min-width: 769px) {
+  .guideButton {
+    bottom: 24px;
+    right: 24px;
+  }
+}
+
+.guideOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 3000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0;
+  animation: fadeIn 200ms ease;
+}
+
+.guideContainer {
+  background: var(--bg-dark);
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: calc(var(--sat) + 16px) 20px calc(var(--sab) + 80px) 20px;
+}
+
+@media (min-width: 769px) {
+  .guideContainer {
+    max-width: 640px;
+    height: auto;
+    max-height: 90vh;
+    margin-top: 40px;
+    border: 1px solid var(--border-gold-strong);
+    border-radius: var(--border-radius);
+    padding: 32px;
+  }
+
+  .guideContainer::before,
+  .guideContainer::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-color: var(--gold);
+    border-style: solid;
+    pointer-events: none;
+  }
+}
+
+.guideHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-gold);
+}
+
+.guideTitle {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.closeButton {
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.closeButton:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.guideContent h2 {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  color: var(--gold);
+  margin-top: 28px;
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.guideContent h2:first-child {
+  margin-top: 0;
+}
+
+.guideContent h3 {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  color: var(--gold-light);
+  margin-top: 18px;
+  margin-bottom: 8px;
+}
+
+.guideContent p {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  margin-bottom: 10px;
+}
+
+.guideContent ul, .guideContent ol {
+  padding-left: 20px;
+  margin-bottom: 12px;
+}
+
+.guideContent li {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  margin-bottom: 4px;
+}
+
+.guideContent strong {
+  color: var(--gold-light);
+}
+
+.guideContent code {
+  background: var(--bg-lighter);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.85rem;
+  color: var(--text-gold);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0 16px;
+  font-size: 0.85rem;
+}
+
+.table th {
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--gold);
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border-gold);
+  background: var(--bg-medium);
+}
+
+.table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.tocList {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.tocItem {
+  padding: 5px 12px;
+  background: var(--bg-medium);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  font-family: var(--font-heading);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tocItem:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}

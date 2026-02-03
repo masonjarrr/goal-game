@@ -1,0 +1,272 @@
+.appShell {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  width: var(--sidebar-width);
+  background: var(--bg-dark);
+  border-right: 1px solid var(--border-gold);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 100;
+}
+
+.sidebarLogo {
+  padding: 24px 20px;
+  border-bottom: 1px solid var(--border-gold);
+}
+
+.logoTitle {
+  font-family: var(--font-heading);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+}
+
+.logoSubtitle {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+  font-style: italic;
+}
+
+.sidebarNav {
+  flex: 1;
+  padding: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  width: 100%;
+  text-align: left;
+  position: relative;
+}
+
+.navItem:hover {
+  color: var(--text-primary);
+  background: var(--bg-medium);
+}
+
+.navItemActive {
+  color: var(--gold);
+  background: var(--bg-medium);
+}
+
+.navItemActive::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 3px;
+  background: var(--gold);
+  border-radius: 0 2px 2px 0;
+}
+
+.navIcon {
+  font-size: 1.1rem;
+  width: 24px;
+  text-align: center;
+}
+
+/* Header */
+.header {
+  height: calc(var(--header-height) + var(--sat));
+  padding-top: var(--sat);
+  background: var(--bg-dark);
+  border-bottom: 1px solid var(--border-gold);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 28px;
+  padding-right: 28px;
+  position: fixed;
+  top: 0;
+  left: var(--sidebar-width);
+  right: 0;
+  z-index: 99;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.characterName {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.levelBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: var(--bg-medium);
+  border: 1px solid var(--border-gold);
+  border-radius: 20px;
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  color: var(--gold);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.headerXP {
+  width: 200px;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Main content area */
+.main {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  margin-top: calc(var(--header-height) + var(--sat));
+  padding: 28px;
+  min-height: calc(100vh - var(--header-height) - var(--sat));
+}
+
+/* XP Float animation */
+.xpFloat {
+  position: fixed;
+  top: calc(20px + var(--sat));
+  right: 28px;
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--gold-light);
+  text-shadow: 0 0 10px var(--gold-glow-strong);
+  animation: xpFloat 1.5s ease-out forwards;
+  z-index: 2000;
+  pointer-events: none;
+}
+
+/* Mobile: sidebar becomes bottom nav */
+@media (max-width: 768px) {
+  .appShell {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: auto;
+    flex-direction: column;
+    border-right: none;
+    border-top: 1px solid var(--border-gold);
+    z-index: 200;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .sidebarLogo {
+    display: none;
+  }
+
+  .sidebarNav {
+    flex-direction: row;
+    padding: 0;
+    gap: 0;
+  }
+
+  .navItem {
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 10px 4px;
+    font-size: 0.6rem;
+    text-align: center;
+  }
+
+  .navItemActive::before {
+    top: 0;
+    bottom: auto;
+    left: 20%;
+    right: 20%;
+    width: auto;
+    height: 2px;
+    border-radius: 0 0 2px 2px;
+  }
+
+  .navIcon {
+    font-size: 1.3rem;
+  }
+
+  .header {
+    left: 0;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .characterName {
+    font-size: 0.85rem;
+  }
+
+  .levelBadge {
+    font-size: 0.65rem;
+    padding: 3px 8px;
+  }
+
+  .headerXP {
+    width: 120px;
+  }
+
+  .main {
+    margin-left: 0;
+    padding: 16px;
+    padding-bottom: 80px; /* space for bottom nav */
+  }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+  .headerLeft {
+    gap: 8px;
+  }
+
+  .characterName {
+    display: none;
+  }
+
+  .main {
+    padding: 12px;
+    padding-bottom: 80px;
+  }
+}

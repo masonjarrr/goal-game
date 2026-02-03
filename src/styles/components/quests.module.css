@@ -1,0 +1,205 @@
+.questLog {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.questToolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.questFilters {
+  display: flex;
+  gap: 10px;
+  flex: 1;
+}
+
+.goalSection {
+  margin-bottom: 8px;
+}
+
+.goalHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.goalDomainIcon {
+  font-size: 1.3rem;
+}
+
+.goalTitle {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.goalDomain {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  padding: 2px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.questsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-left: 8px;
+}
+
+/* Quest Card */
+.questCard {
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  transition: border-color var(--transition-fast);
+}
+
+.questCard:hover {
+  border-color: var(--border-gold);
+}
+
+.questCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.questPriority {
+  width: 4px;
+  align-self: stretch;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.questPriority.normal { background: var(--priority-normal); }
+.questPriority.important { background: var(--priority-important); }
+.questPriority.legendary { background: var(--priority-legendary); }
+
+.questTitle {
+  flex: 1;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.questCompleted .questTitle {
+  text-decoration: line-through;
+  color: var(--text-dim);
+}
+
+.questMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.questStepCount {
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--bg-lighter);
+}
+
+.expandIcon {
+  color: var(--text-dim);
+  transition: transform var(--transition-fast);
+  font-size: 0.8rem;
+}
+
+.expandIcon.expanded {
+  transform: rotate(90deg);
+}
+
+/* Steps */
+.stepsSection {
+  padding: 0 16px 14px;
+  border-top: 1px solid var(--border-color);
+}
+
+.stepsList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 10px;
+}
+
+.stepItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: var(--border-radius);
+  transition: background var(--transition-fast);
+}
+
+.stepItem:hover {
+  background: var(--bg-medium);
+}
+
+.stepPriorityDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.stepTitle {
+  flex: 1;
+  font-size: 0.95rem;
+}
+
+.stepActions {
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.stepItem:hover .stepActions {
+  opacity: 1;
+}
+
+.addStepRow {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.addStepInput {
+  flex: 1;
+}
+
+/* Forms */
+.formGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.formRow {
+  display: flex;
+  gap: 12px;
+}
+
+.formRow > * {
+  flex: 1;
+}
+
+.emptyState {
+  text-align: center;
+  color: var(--text-dim);
+  font-style: italic;
+  padding: 32px;
+}

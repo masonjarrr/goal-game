@@ -1,0 +1,52 @@
+.levelUpOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 300ms ease;
+}
+
+.levelUpContent {
+  text-align: center;
+  animation: levelUpGlow 600ms ease forwards;
+}
+
+.levelUpIcon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+  display: block;
+  filter: drop-shadow(0 0 20px var(--gold-glow-strong));
+}
+
+.levelUpTitle {
+  font-family: var(--font-heading);
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: var(--gold);
+  text-shadow: 0 0 30px var(--gold-glow-strong);
+  margin-bottom: 8px;
+}
+
+.levelUpLevel {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  color: var(--gold-light);
+  margin-bottom: 8px;
+}
+
+.levelUpTitleName {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-bottom: 28px;
+}
+
+.dismissText {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  cursor: pointer;
+}

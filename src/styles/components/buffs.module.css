@@ -1,0 +1,203 @@
+.buffTracker {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.buffToolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.buffToolbar > :first-child {
+  flex: 1;
+}
+
+.buffGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.buffSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Buff Card */
+.buffCard {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  transition: all var(--transition-fast);
+}
+
+.buffCard:hover {
+  border-color: var(--border-gold);
+}
+
+.buffCardIcon {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.buffCardInfo {
+  flex: 1;
+}
+
+.buffCardName {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 2px;
+}
+
+.buffCardDesc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.buffCardMeta {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.buffCardActions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.buffTypeBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.buffTypeBuff {
+  background: rgba(46, 204, 113, 0.15);
+  color: var(--buff-color);
+  border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.buffTypeDebuff {
+  background: rgba(231, 76, 60, 0.15);
+  color: var(--debuff-color);
+  border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+/* Active Buffs Section */
+.activeSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.activeBuffItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--border-radius);
+}
+
+.activeBuffItem.isBuff {
+  background: rgba(46, 204, 113, 0.06);
+  border: 1px solid rgba(46, 204, 113, 0.2);
+  animation: buffPulse 3s ease-in-out infinite;
+}
+
+.activeBuffItem.isDebuff {
+  background: rgba(231, 76, 60, 0.06);
+  border: 1px solid rgba(231, 76, 60, 0.2);
+  animation: debuffThrob 2s ease-in-out infinite;
+}
+
+.activeBuffIcon {
+  font-size: 1.5rem;
+}
+
+.activeBuffInfo {
+  flex: 1;
+}
+
+.activeBuffName {
+  font-weight: 600;
+}
+
+.activeBuffTimer {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.activeBuffEffects {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+/* Form */
+.formGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.formRow {
+  display: flex;
+  gap: 12px;
+}
+
+.formRow > * {
+  flex: 1;
+}
+
+.statEffectRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.statEffectLabel {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  width: 80px;
+  text-transform: capitalize;
+}
+
+.statEffectInput {
+  width: 70px;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border-gold);
+  margin: 4px 0;
+}
+
+.emptyState {
+  text-align: center;
+  color: var(--text-dim);
+  font-style: italic;
+  padding: 20px;
+}
+
+@media (max-width: 768px) {
+  .buffGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .formRow {
+    flex-direction: column;
+  }
+}

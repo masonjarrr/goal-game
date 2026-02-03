@@ -1,0 +1,190 @@
+.characterGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.characterMain {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.characterSide {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.profileSection {
+  text-align: center;
+  padding: 24px;
+}
+
+.avatarIcon {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 0 12px var(--gold-glow));
+}
+
+.characterNameDisplay {
+  font-family: var(--font-heading);
+  font-size: 1.8rem;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.characterTitleDisplay {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  color: var(--gold);
+  margin-bottom: 16px;
+}
+
+.xpSection {
+  margin-top: 16px;
+}
+
+.totalXP {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 8px;
+}
+
+/* Stats Panel */
+.statsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.statRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.statName {
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  width: 90px;
+  flex-shrink: 0;
+}
+
+.statBar {
+  flex: 1;
+}
+
+.statValue {
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  width: 32px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* Active Buffs List */
+.buffsList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.activeBuff {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--bg-dark);
+  border-radius: var(--border-radius);
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.activeBuff.buffType {
+  border-color: rgba(46, 204, 113, 0.2);
+  animation: buffPulse 3s ease-in-out infinite;
+}
+
+.activeBuff.debuffType {
+  border-color: rgba(231, 76, 60, 0.2);
+  animation: debuffThrob 2s ease-in-out infinite;
+}
+
+.buffIcon {
+  font-size: 1.4rem;
+}
+
+.buffInfo {
+  flex: 1;
+}
+
+.buffName {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.buffTimer {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.emptyState {
+  text-align: center;
+  color: var(--text-dim);
+  font-style: italic;
+  padding: 20px;
+}
+
+/* Name edit */
+.nameEditRow {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  justify-content: center;
+}
+
+/* XP Log */
+.xpLogList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.xpLogEntry {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  background: var(--bg-dark);
+  border-radius: var(--border-radius);
+  font-size: 0.85rem;
+}
+
+.xpLogReason {
+  color: var(--text-secondary);
+}
+
+.xpLogAmount {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.xpLogAmount.negative {
+  color: var(--danger);
+}
+
+@media (max-width: 768px) {
+  .characterGrid {
+    grid-template-columns: 1fr;
+  }
+}

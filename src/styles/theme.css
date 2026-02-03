@@ -1,0 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+:root {
+  /* Backgrounds */
+  --bg-darkest: #0a0a0f;
+  --bg-dark: #111118;
+  --bg-medium: #1a1a24;
+  --bg-light: #222233;
+  --bg-lighter: #2a2a3d;
+
+  /* Gold accent palette */
+  --gold: #c8a84e;
+  --gold-light: #e0c872;
+  --gold-dark: #9a7d2e;
+  --gold-dim: #6b5a2a;
+  --gold-glow: rgba(200, 168, 78, 0.3);
+  --gold-glow-strong: rgba(200, 168, 78, 0.6);
+
+  /* Text */
+  --text-primary: #e8e4d8;
+  --text-secondary: #a8a498;
+  --text-dim: #6a6860;
+  --text-gold: #c8a84e;
+
+  /* Functional colors */
+  --health: #e74c3c;
+  --stamina: #2ecc71;
+  --willpower: #9b59b6;
+  --focus: #3498db;
+  --charisma: #e67e22;
+  --success: #2ecc71;
+  --warning: #f39c12;
+  --danger: #e74c3c;
+  --info: #3498db;
+
+  /* Priority */
+  --priority-normal: #a8a498;
+  --priority-important: #c8a84e;
+  --priority-legendary: #ff6b35;
+
+  /* Buff/Debuff */
+  --buff-color: #2ecc71;
+  --buff-glow: rgba(46, 204, 113, 0.4);
+  --debuff-color: #e74c3c;
+  --debuff-glow: rgba(231, 76, 60, 0.4);
+
+  /* Borders */
+  --border-color: #2a2a3d;
+  --border-gold: rgba(200, 168, 78, 0.3);
+  --border-gold-strong: rgba(200, 168, 78, 0.6);
+
+  /* Fonts */
+  --font-heading: 'Cinzel', serif;
+  --font-body: 'Crimson Text', serif;
+
+  /* Sizing */
+  --sidebar-width: 220px;
+  --header-height: 64px;
+  --border-radius: 4px;
+  --panel-padding: 20px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 400ms ease;
+}

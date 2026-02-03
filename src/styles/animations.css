@@ -1,0 +1,53 @@
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes goldPulse {
+  0%, 100% { box-shadow: 0 0 8px var(--gold-glow); }
+  50% { box-shadow: 0 0 20px var(--gold-glow-strong); }
+}
+
+@keyframes buffPulse {
+  0%, 100% { box-shadow: 0 0 6px var(--buff-glow); }
+  50% { box-shadow: 0 0 16px var(--buff-glow); }
+}
+
+@keyframes debuffThrob {
+  0%, 100% { box-shadow: 0 0 6px var(--debuff-glow); }
+  50% { box-shadow: 0 0 16px var(--debuff-glow); }
+}
+
+@keyframes xpFloat {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-40px); }
+}
+
+@keyframes levelUpGlow {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes barFill {
+  from { width: 0; }
+}
+
+.fade-in { animation: fadeIn var(--transition-normal) ease forwards; }
+.fade-in-up { animation: fadeInUp var(--transition-normal) ease forwards; }
+.slide-in-left { animation: slideInLeft var(--transition-normal) ease forwards; }

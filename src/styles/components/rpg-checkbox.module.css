@@ -1,0 +1,52 @@
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.box {
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--border-gold);
+  border-radius: 3px;
+  background: var(--bg-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.checkbox:hover .box {
+  border-color: var(--gold);
+  box-shadow: 0 0 6px var(--gold-glow);
+}
+
+.checked .box {
+  background: var(--gold-dark);
+  border-color: var(--gold);
+}
+
+.checkmark {
+  color: var(--gold-light);
+  font-size: 14px;
+  line-height: 1;
+}
+
+.checkboxLabel {
+  font-size: 1rem;
+  color: var(--text-primary);
+  transition: all var(--transition-fast);
+}
+
+.checked .checkboxLabel {
+  color: var(--text-secondary);
+  text-decoration: line-through;
+  text-decoration-color: var(--gold-dim);
+}
+
+.hidden {
+  display: none;
+}

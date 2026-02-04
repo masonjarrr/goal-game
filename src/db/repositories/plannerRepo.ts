@@ -1,5 +1,6 @@
 import { getDB, persist } from '../database';
 import { PlannerEvent } from '../../types/planner';
+import type { SqlValue } from 'sql.js';
 
 export function getEvents(date?: string, startDate?: string, endDate?: string): PlannerEvent[] {
   const db = getDB();
@@ -23,7 +24,7 @@ export function getEvents(date?: string, startDate?: string, endDate?: string): 
 
   const result = db.exec(sql, params);
   if (!result.length) return [];
-  return result[0].values.map((row) => ({
+  return result[0].values.map((row: SqlValue[]) => ({
     id: row[0] as number,
     title: row[1] as string,
     description: row[2] as string,

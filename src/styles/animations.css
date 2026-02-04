@@ -48,6 +48,16 @@
   from { width: 0; }
 }
 
+/* Character sprite idle breathing */
+@keyframes idleBreath {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-2px) scale(1.02);
+  }
+}
+
 .fade-in { animation: fadeIn var(--transition-normal) ease forwards; }
 .fade-in-up { animation: fadeInUp var(--transition-normal) ease forwards; }
 .slide-in-left { animation: slideInLeft var(--transition-normal) ease forwards; }

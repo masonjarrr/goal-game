@@ -76,7 +76,7 @@ function AppContent({ activeTab, setActiveTab }: { activeTab: TabId; setActiveTa
 
   const handleExport = useCallback(async () => {
     const data = await exportDatabase();
-    const blob = new Blob([data], { type: 'application/octet-stream' });
+    const blob = new Blob([new Uint8Array(data)], { type: 'application/octet-stream' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;

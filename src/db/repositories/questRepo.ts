@@ -1,12 +1,13 @@
 import { getDB, persist } from '../database';
 import { Goal, Quest, Step, QuestWithSteps, GoalWithQuests } from '../../types/quest';
 import { Domain } from '../../types/common';
+import type { SqlValue } from 'sql.js';
 
 export function getDomains(): Domain[] {
   const db = getDB();
   const result = db.exec('SELECT id, name, icon, color FROM domains ORDER BY id');
   if (!result.length) return [];
-  return result[0].values.map((row) => ({
+  return result[0].values.map((row: SqlValue[]) => ({
     id: row[0] as number,
     name: row[1] as string,
     icon: row[2] as string,
@@ -23,7 +24,7 @@ export function getGoals(domainId?: number, status?: string): Goal[] {
   sql += ' ORDER BY created_at DESC';
   const result = db.exec(sql, params);
   if (!result.length) return [];
-  return result[0].values.map((row) => ({
+  return result[0].values.map((row: SqlValue[]) => ({
     id: row[0] as number,
     domain_id: row[1] as number,
     title: row[2] as string,
@@ -58,7 +59,7 @@ export function getQuests(goalId?: number, status?: string): Quest[] {
   sql += ' ORDER BY created_at DESC';
   const result = db.exec(sql, params);
   if (!result.length) return [];
-  return result[0].values.map((row) => ({
+  return result[0].values.map((row: SqlValue[]) => ({
     id: row[0] as number,
     goal_id: row[1] as number,
     title: row[2] as string,
@@ -92,7 +93,7 @@ export function getSteps(questId: number): Step[] {
     [questId]
   );
   if (!result.length) return [];
-  return result[0].values.map((row) => ({
+  return result[0].values.map((row: SqlValue[]) => ({
     id: row[0] as number,
     quest_id: row[1] as number,
     title: row[2] as string,

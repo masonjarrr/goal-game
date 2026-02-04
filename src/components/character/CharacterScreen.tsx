@@ -8,6 +8,7 @@ import { RPGPanel } from '../ui/RPGPanel';
 import { RPGProgressBar } from '../ui/RPGProgressBar';
 import { RPGButton } from '../ui/RPGButton';
 import { RPGInput } from '../ui/RPGInput';
+import { CharacterSprite } from './CharacterSprite';
 import styles from '../../styles/components/character.module.css';
 
 interface CharacterScreenProps {
@@ -54,7 +55,7 @@ export function CharacterScreen({ character, stats, activeBuffs, xpLog, onNameCh
       <div className={styles.characterMain}>
         <RPGPanel>
           <div className={styles.profileSection}>
-            <span className={styles.avatarIcon}>⚔</span>
+            <CharacterSprite level={character.level} stats={stats} />
             {editingName ? (
               <div className={styles.nameEditRow}>
                 <RPGInput

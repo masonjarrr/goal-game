@@ -1,5 +1,6 @@
 import { getDB, persist } from '../database';
 import { BuffDefinition, BuffLog } from '../../types/buff';
+import type { SqlValue } from 'sql.js';
 
 export function getBuffDefinitions(type?: string): BuffDefinition[] {
   const db = getDB();
@@ -9,7 +10,7 @@ export function getBuffDefinitions(type?: string): BuffDefinition[] {
   sql += ' ORDER BY name';
   const result = db.exec(sql, params);
   if (!result.length) return [];
-  return result[0].values.map((row) => ({
+  return result[0].values.map((row: SqlValue[]) => ({
     id: row[0] as number,
     name: row[1] as string,
     description: row[2] as string,
@@ -76,7 +77,7 @@ export function getBuffLog(limit = 50): BuffLog[] {
     [limit]
   );
   if (!result.length) return [];
-  return result[0].values.map((row) => ({
+  return result[0].values.map((row: SqlValue[]) => ({
     id: row[0] as number,
     definition_id: row[1] as number,
     activated_at: row[2] as string,
@@ -97,7 +98,7 @@ export function getStreakDays(definitionId: number): number {
 
   let streak = 0;
   const today = new Date().toISOString().split('T')[0];
-  const dates = result[0].values.map((r) => r[0] as string);
+  const dates = result[0].values.map((r: SqlValue[]) => r[0] as string);
 
   // Check if today or yesterday is in the list to start the streak
   const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];

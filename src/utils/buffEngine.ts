@@ -1,6 +1,7 @@
 import { getDB, persist } from '../db/database';
 import { ActiveBuff, ParsedStatEffects } from '../types/buff';
 import { Stats } from '../types/character';
+import type { SqlValue } from 'sql.js';
 
 export function parseStatEffects(json: string): ParsedStatEffects {
   try {
@@ -31,7 +32,7 @@ export function getActiveBuffs(): ActiveBuff[] {
 
   if (!result.length) return [];
 
-  return result[0].values.map((row) => ({
+  return result[0].values.map((row: SqlValue[]) => ({
     id: row[0] as number,
     definition_id: row[1] as number,
     activated_at: row[2] as string,

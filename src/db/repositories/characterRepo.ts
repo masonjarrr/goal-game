@@ -1,5 +1,6 @@
 import { getDB, persist } from '../database';
 import { Character, XPLogEntry } from '../../types/character';
+import type { SqlValue } from 'sql.js';
 
 export function getCharacter(): Character {
   const db = getDB();
@@ -30,7 +31,7 @@ export function getXPLog(limit = 50): XPLogEntry[] {
     [limit]
   );
   if (!result.length) return [];
-  return result[0].values.map((row) => ({
+  return result[0].values.map((row: SqlValue[]) => ({
     id: row[0] as number,
     amount: row[1] as number,
     reason: row[2] as string,

@@ -4,15 +4,14 @@
 importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js');
 
-// Firebase configuration - these will be replaced during build or set via env
-// For now, using empty config that will be populated by the main app
+// Firebase configuration
 firebase.initializeApp({
-  apiKey: self.FIREBASE_API_KEY || '',
-  authDomain: self.FIREBASE_AUTH_DOMAIN || '',
-  projectId: self.FIREBASE_PROJECT_ID || '',
-  storageBucket: self.FIREBASE_STORAGE_BUCKET || '',
-  messagingSenderId: self.FIREBASE_MESSAGING_SENDER_ID || '',
-  appId: self.FIREBASE_APP_ID || '',
+  apiKey: 'AIzaSyA3dJLU8Xw6vcqXtOhVbuI5aO_ImdT8upg',
+  authDomain: 'goal-game-7ad53.firebaseapp.com',
+  projectId: 'goal-game-7ad53',
+  storageBucket: 'goal-game-7ad53.firebasestorage.app',
+  messagingSenderId: '86507800050',
+  appId: '1:86507800050:web:f7674a55bc2291686f976b',
 });
 
 const messaging = firebase.messaging();
@@ -26,16 +25,18 @@ messaging.onBackgroundMessage((payload) => {
     body: payload.notification?.body || 'You have an upcoming event!',
     icon: '/goal-game/icons/icon-192.png',
     badge: '/goal-game/icons/icon-192.png',
-    tag: payload.data?.eventId || 'goal-game-notification',
+    tag: payload.data?.eventId || payload.data?.buffLogId || 'goal-game-notification',
     data: {
       url: '/goal-game/',
       eventId: payload.data?.eventId,
+      buffLogId: payload.data?.buffLogId,
+      notificationType: payload.data?.notificationType,
     },
     requireInteraction: true,
     actions: [
       {
         action: 'view',
-        title: 'View Event',
+        title: 'View',
       },
       {
         action: 'dismiss',

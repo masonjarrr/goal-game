@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { Character } from '../types/character';
 import { getCharacter, updateCharacterName, getXPLog } from '../db/repositories/characterRepo';
 import { XPLogEntry } from '../types/character';
-import { awardXP, XPAwardResult } from '../utils/xp';
+import { awardXP, deductXP as deductXPUtil, XPAwardResult, XPDeductResult } from '../utils/xp';
 
 export function useCharacter() {
   const [character, setCharacter] = useState<Character>(() => getCharacter());
@@ -32,6 +32,20 @@ export function useCharacter() {
     [refresh]
   );
 
+  const deductXP = useCallback(
+    async (amount: number, reason: string, sourceType: string, sourceId?: number) => {
+      const result: XPDeductResult = await deductXPUtil(amount, reason, sourceType, sourceId ?? null);
+      // Show floating negative XP
+      const floatId = Date.now();
+      setXPFloats((prev) => [...prev, { id: floatId, amount: -amount }]);
+      setTimeout(() => setXPFloats((prev) => prev.filter((f) => f.id !== floatId)), 1500);
+
+      refresh();
+      return result;
+    },
+    [refresh]
+  );
+
   const dismissLevelUp = useCallback(() => setLevelUpInfo(null), []);
 
   const setName = useCallback(
@@ -48,6 +62,7 @@ export function useCharacter() {
     levelUpInfo,
     xpFloats,
     grantXP,
+    deductXP,
     dismissLevelUp,
     setName,
     refresh,

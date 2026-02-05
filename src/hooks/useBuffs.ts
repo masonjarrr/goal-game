@@ -7,6 +7,7 @@ import { XP_DAILY_BUFF, XP_STREAK_7DAY } from '../utils/constants';
 
 interface UseBuffsOptions {
   grantXP: (amount: number, reason: string, sourceType: string, sourceId?: number) => Promise<any>;
+  deductXP: (amount: number, reason: string, sourceType: string, sourceId?: number) => Promise<any>;
   scheduleBuffExpiry?: (
     buffLogId: number,
     buffName: string,
@@ -17,7 +18,7 @@ interface UseBuffsOptions {
   onBuffActivated?: (type: 'buff' | 'debuff') => void;
 }
 
-export function useBuffs({ grantXP, scheduleBuffExpiry, cancelBuffExpiry, onBuffActivated }: UseBuffsOptions) {
+export function useBuffs({ grantXP, deductXP, scheduleBuffExpiry, cancelBuffExpiry, onBuffActivated }: UseBuffsOptions) {
   const [definitions, setDefinitions] = useState<BuffDefinition[]>([]);
   const [activeBuffs, setActiveBuffs] = useState<ActiveBuff[]>([]);
   const [stats, setStats] = useState<Stats>({ stamina: 10, willpower: 10, health: 10, focus: 10, charisma: 10 });
@@ -111,10 +112,20 @@ export function useBuffs({ grantXP, scheduleBuffExpiry, cancelBuffExpiry, onBuff
       if (cancelBuffExpiry) {
         await cancelBuffExpiry(logId);
       }
-      await buffRepo.deactivateBuff(logId);
+
+      // Get XP that was awarded for this buff before deactivating
+      const xpAwarded = buffRepo.getXPAwardedForBuff(logId);
+
+      const result = await buffRepo.deactivateBuff(logId);
+
+      // Deduct XP if this was a buff (not debuff) and XP was awarded
+      if (result && result.buffType === 'buff' && xpAwarded > 0) {
+        await deductXP(xpAwarded, `Deactivated buff: ${result.buffName}`, 'buff_undo', logId);
+      }
+
       refresh();
     },
-    [refresh, cancelBuffExpiry]
+    [refresh, cancelBuffExpiry, deductXP]
   );
 
   return {

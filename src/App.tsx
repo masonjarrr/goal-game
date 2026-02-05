@@ -127,6 +127,7 @@ function AppContent({ activeTab, setActiveTab }: { activeTab: TabId; setActiveTa
   const notifications = useNotifications();
   const buffs = useBuffs({
     grantXP: char.grantXP,
+    deductXP: char.deductXP,
     scheduleBuffExpiry: notifications.scheduleBuffExpiry,
     cancelBuffExpiry: notifications.cancelBuffExpiry,
     onBuffActivated: (type) => {

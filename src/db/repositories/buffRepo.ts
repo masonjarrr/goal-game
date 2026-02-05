@@ -103,10 +103,47 @@ export async function activateBuff(definitionId: number): Promise<ActivateBuffRe
   return { logId, isStacked: false, newExpiresAt };
 }
 
-export async function deactivateBuff(logId: number): Promise<void> {
+export interface DeactivateBuffResult {
+  definitionId: number;
+  buffType: 'buff' | 'debuff';
+  buffName: string;
+}
+
+export async function deactivateBuff(logId: number): Promise<DeactivateBuffResult | null> {
   const db = getDB();
+
+  // Get buff info before deactivating
+  const infoResult = db.exec(
+    `SELECT bl.definition_id, bd.type, bd.name
+     FROM buff_log bl
+     JOIN buff_definitions bd ON bl.definition_id = bd.id
+     WHERE bl.id = ?`,
+    [logId]
+  );
+
+  if (!infoResult.length || !infoResult[0].values.length) {
+    return null;
+  }
+
+  const [definitionId, buffType, buffName] = infoResult[0].values[0] as [number, 'buff' | 'debuff', string];
+
   db.run('UPDATE buff_log SET is_active = 0 WHERE id = ?', [logId]);
   await persist();
+
+  return { definitionId, buffType, buffName };
+}
+
+export function getXPAwardedForBuff(logId: number): number {
+  const db = getDB();
+  const result = db.exec(
+    `SELECT SUM(amount) FROM xp_log
+     WHERE source_type = 'buff' AND source_id = ?`,
+    [logId]
+  );
+  if (!result.length || !result[0].values.length || result[0].values[0][0] === null) {
+    return 0;
+  }
+  return result[0].values[0][0] as number;
 }
 
 export function getBuffLog(limit = 50): BuffLog[] {

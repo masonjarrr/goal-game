@@ -1,0 +1,403 @@
+.arena {
+  background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-medium) 100%);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.arena::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(ellipse at 30% 80%, rgba(200, 168, 78, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(231, 76, 60, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.victoryArena {
+  border-color: var(--stat-green);
+}
+
+.victoryArena::before {
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(46, 204, 113, 0.1) 0%, transparent 60%);
+}
+
+.loadingState {
+  text-align: center;
+  color: var(--text-dim);
+  padding: 40px;
+  font-style: italic;
+}
+
+/* Victory Banner */
+.victoryBanner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: linear-gradient(90deg, rgba(46, 204, 113, 0.2), rgba(39, 174, 96, 0.15));
+  border: 1px solid var(--stat-green);
+  border-radius: 8px;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.victoryIcon {
+  font-size: 1.3rem;
+}
+
+.victoryText {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  color: var(--stat-green);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.victoryReward {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  color: var(--text-gold);
+  padding: 4px 10px;
+  background: rgba(200, 168, 78, 0.2);
+  border-radius: 12px;
+}
+
+/* Battle Scene */
+.battleScene {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+  min-height: 160px;
+}
+
+/* Fighter Side (Character & Boss) */
+.fighterSide {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  max-width: 140px;
+}
+
+.fighterSprite {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bossSprite {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.bossIcon {
+  font-size: 3.5rem;
+  filter: drop-shadow(0 0 10px rgba(231, 76, 60, 0.4));
+  animation: bossIdle 2s ease-in-out infinite;
+}
+
+.bossGlow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90px;
+  height: 90px;
+  background: radial-gradient(circle, rgba(231, 76, 60, 0.2) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: bossGlowPulse 2s ease-in-out infinite;
+}
+
+.bossSprite.defeated .bossIcon {
+  filter: grayscale(1) opacity(0.4);
+  animation: none;
+}
+
+.bossSprite.defeated .bossGlow {
+  display: none;
+}
+
+@keyframes bossIdle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes bossGlowPulse {
+  0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+}
+
+.fighterInfo {
+  text-align: center;
+  min-height: 40px;
+}
+
+.fighterName {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 130px;
+}
+
+.bossName {
+  color: var(--danger);
+}
+
+.fighterTitle {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 130px;
+}
+
+.fighterBar {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.barLabel {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+.hpLabel {
+  color: var(--danger);
+}
+
+/* HP Bar */
+.hpBar {
+  height: 8px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.hpFill {
+  height: 100%;
+  background: linear-gradient(90deg, #c0392b, #e74c3c);
+  border-radius: 3px;
+  transition: width 0.5s ease-out;
+}
+
+.hpFill.low {
+  background: linear-gradient(90deg, #27ae60, #2ecc71);
+  animation: lowHpPulse 1s ease-in-out infinite;
+}
+
+.hpFill.empty {
+  width: 0 !important;
+}
+
+@keyframes lowHpPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* VS Center */
+.vsCenter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 8px;
+}
+
+.vsText {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  color: var(--text-gold);
+  text-shadow: 0 0 10px rgba(200, 168, 78, 0.5);
+  letter-spacing: 0.1em;
+}
+
+.battleStats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.damageDealt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 12px;
+  background: rgba(231, 76, 60, 0.1);
+  border: 1px solid rgba(231, 76, 60, 0.3);
+  border-radius: 8px;
+}
+
+.damageValue {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  color: var(--danger);
+}
+
+.damageLabel {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Battle Info Bar */
+.battleInfo {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 12px 0;
+  margin-top: 12px;
+  border-top: 1px solid var(--border-color);
+  position: relative;
+  z-index: 1;
+  flex-wrap: wrap;
+}
+
+.infoItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.infoIcon {
+  font-size: 0.9rem;
+}
+
+.infoText {
+  white-space: nowrap;
+}
+
+/* Damage Guide */
+.guideToggle {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  background: none;
+  border: 1px dashed var(--border-color);
+  border-radius: var(--border-radius);
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  margin-top: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.guideToggle:hover {
+  border-color: var(--border-gold);
+  color: var(--text-gold);
+}
+
+.damageGuide {
+  margin-top: 12px;
+  padding: 12px;
+  background: rgba(200, 168, 78, 0.08);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--border-radius);
+  position: relative;
+  z-index: 1;
+}
+
+.guideGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.guideItem {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  padding: 4px 8px;
+  background: var(--bg-dark);
+  border-radius: 4px;
+}
+
+.guideAmount {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+  .battleScene {
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .fighterSide {
+    max-width: 100%;
+    flex-direction: row;
+    gap: 12px;
+  }
+
+  .fighterSprite,
+  .bossSprite {
+    width: 60px;
+    height: 60px;
+  }
+
+  .bossIcon {
+    font-size: 2.5rem;
+  }
+
+  .fighterInfo {
+    text-align: left;
+    flex: 1;
+  }
+
+  .fighterBar {
+    width: 100%;
+  }
+
+  .vsCenter {
+    flex-direction: row;
+    gap: 16px;
+    padding: 8px 0;
+  }
+
+  .battleInfo {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .guideGrid {
+    grid-template-columns: 1fr;
+  }
+}

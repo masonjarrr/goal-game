@@ -32,6 +32,7 @@ import { BackupSettings } from './components/settings/BackupSettings';
 import { NotificationSettings } from './components/notifications/NotificationSettings';
 import { DailyQuestsPanel } from './components/dailyQuests/DailyQuestsPanel';
 import { WeeklyBossPanel } from './components/weeklyBoss/WeeklyBossPanel';
+import { BattleArena } from './components/weeklyBoss/BattleArena';
 import { AchievementPanel } from './components/achievements/AchievementPanel';
 import { AchievementUnlockModal } from './components/achievements/AchievementUnlockModal';
 import { FocusTimerPanel } from './components/focusTimer/FocusTimerPanel';
@@ -321,30 +322,18 @@ function AppContent({ activeTab, setActiveTab }: { activeTab: TabId; setActiveTa
               )}
             </AccordionSection>
 
-            <AccordionSection
-              title="Weekly Boss"
-              icon="🐉"
-              badge={weeklyBoss.boss?.is_defeated ? 'Defeated!' : `${weeklyBoss.hpPercentage}% HP`}
-              badgeColor={weeklyBoss.boss?.is_defeated ? 'green' : weeklyBoss.hpPercentage < 30 ? 'red' : 'gold'}
-              headerContent={
-                !weeklyBoss.boss?.is_defeated && (
-                  <div style={{ width: 80, height: 6, background: 'var(--bg-dark)', borderRadius: 3, overflow: 'hidden' }}>
-                    <div style={{ width: `${weeklyBoss.hpPercentage}%`, height: '100%', background: weeklyBoss.hpPercentage < 30 ? '#ef4444' : '#22c55e', borderRadius: 3 }} />
-                  </div>
-                )
-              }
-            >
-              <WeeklyBossPanel
-                boss={weeklyBoss.boss}
-                loading={weeklyBoss.loading}
-                weekStart={weeklyBoss.weekStart}
-                weekEnd={weeklyBoss.weekEnd}
-                hpPercentage={weeklyBoss.hpPercentage}
-                damageDealt={weeklyBoss.damageDealt}
-                totalDefeated={weeklyBoss.totalDefeated}
-                compact
-              />
-            </AccordionSection>
+            {/* Battle Arena - Character vs Weekly Boss */}
+            <BattleArena
+              character={char.character}
+              stats={buffs.stats}
+              boss={weeklyBoss.boss}
+              loading={weeklyBoss.loading}
+              hpPercentage={weeklyBoss.hpPercentage}
+              damageDealt={weeklyBoss.damageDealt}
+              totalDefeated={weeklyBoss.totalDefeated}
+              weekStart={weeklyBoss.weekStart}
+              weekEnd={weeklyBoss.weekEnd}
+            />
 
             {combos.combos.length > 0 && (
               <AccordionSection

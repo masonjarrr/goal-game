@@ -6,7 +6,7 @@ const NAV_ITEMS: { id: TabId; label: string; icon: string }[] = [
   { id: 'quests', label: 'Quest Log', icon: '📜' },
   { id: 'buffs', label: 'Buffs', icon: '✨' },
   { id: 'focus', label: 'Focus Timer', icon: '🎯' },
-  { id: 'skills', label: 'Skills', icon: '🌳' },
+  { id: 'boss', label: 'Weekly Boss', icon: '🐉' },
   { id: 'inventory', label: 'Inventory', icon: '🎒' },
 ];
 

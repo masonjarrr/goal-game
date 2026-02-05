@@ -32,6 +32,7 @@ import { BackupSettings } from './components/settings/BackupSettings';
 import { NotificationSettings } from './components/notifications/NotificationSettings';
 import { DailyQuestsPanel } from './components/dailyQuests/DailyQuestsPanel';
 import { WeeklyBossPanel } from './components/weeklyBoss/WeeklyBossPanel';
+import { BossPage } from './components/weeklyBoss/BossPage';
 import { AchievementPanel } from './components/achievements/AchievementPanel';
 import { AchievementUnlockModal } from './components/achievements/AchievementUnlockModal';
 import { FocusTimerPanel } from './components/focusTimer/FocusTimerPanel';
@@ -164,10 +165,8 @@ function AppContent({ activeTab, setActiveTab }: { activeTab: TabId; setActiveTa
       combos.refresh();
     }
     if (activeTab === 'focus') focusTimer.refresh();
-    if (activeTab === 'skills') {
-      skillTree.refresh();
-      characterClass.refresh();
-      territory.refresh();
+    if (activeTab === 'boss') {
+      weeklyBoss.refresh();
     }
     if (activeTab === 'inventory') inventory.refresh();
   }, [activeTab]);
@@ -197,7 +196,7 @@ function AppContent({ activeTab, setActiveTab }: { activeTab: TabId; setActiveTa
       if (e.key === '2') setActiveTab('quests');
       if (e.key === '3') setActiveTab('buffs');
       if (e.key === '4') setActiveTab('focus');
-      if (e.key === '5') setActiveTab('skills');
+      if (e.key === '5') setActiveTab('boss');
       if (e.key === '6') setActiveTab('inventory');
     };
     window.addEventListener('keydown', handler);
@@ -319,31 +318,6 @@ function AppContent({ activeTab, setActiveTab }: { activeTab: TabId; setActiveTa
                   />
                 </div>
               )}
-            </AccordionSection>
-
-            <AccordionSection
-              title="Weekly Boss"
-              icon="🐉"
-              badge={weeklyBoss.boss?.is_defeated ? 'Defeated!' : `${weeklyBoss.hpPercentage}% HP`}
-              badgeColor={weeklyBoss.boss?.is_defeated ? 'green' : weeklyBoss.hpPercentage < 30 ? 'red' : 'gold'}
-              headerContent={
-                !weeklyBoss.boss?.is_defeated && (
-                  <div style={{ width: 80, height: 6, background: 'var(--bg-dark)', borderRadius: 3, overflow: 'hidden' }}>
-                    <div style={{ width: `${weeklyBoss.hpPercentage}%`, height: '100%', background: weeklyBoss.hpPercentage < 30 ? '#ef4444' : '#22c55e', borderRadius: 3 }} />
-                  </div>
-                )
-              }
-            >
-              <WeeklyBossPanel
-                boss={weeklyBoss.boss}
-                loading={weeklyBoss.loading}
-                weekStart={weeklyBoss.weekStart}
-                weekEnd={weeklyBoss.weekEnd}
-                hpPercentage={weeklyBoss.hpPercentage}
-                damageDealt={weeklyBoss.damageDealt}
-                totalDefeated={weeklyBoss.totalDefeated}
-                compact
-              />
             </AccordionSection>
 
             {combos.combos.length > 0 && (
@@ -469,171 +443,18 @@ function AppContent({ activeTab, setActiveTab }: { activeTab: TabId; setActiveTa
           />
         )}
 
-        {activeTab === 'skills' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-            {/* Character Class Selection */}
-            <div className="rpg-card">
-              <h2 style={{ color: 'var(--gold)', marginBottom: 16 }}>Character Class</h2>
-              {characterClass.getSelectedClass() ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                  <span style={{ fontSize: '2rem' }}>{characterClass.getSelectedClass()?.icon}</span>
-                  <div>
-                    <h3 style={{ color: 'var(--text-primary)', margin: 0 }}>
-                      {characterClass.getSelectedClass()?.name}
-                    </h3>
-                    <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
-                      {characterClass.getSelectedClass()?.description}
-                    </p>
-                    <p style={{ color: 'var(--gold)', fontSize: '0.85rem', marginTop: 8 }}>
-                      {characterClass.getSelectedClass()?.special_ability_desc}
-                    </p>
-                  </div>
-                </div>
-              ) : (
-                <div>
-                  <p style={{ color: 'var(--text-secondary)', marginBottom: 16 }}>
-                    Choose your class to gain unique bonuses:
-                  </p>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
-                    {characterClass.classes.map((cls) => (
-                      <div
-                        key={cls.id}
-                        style={{
-                          background: 'var(--bg-medium)',
-                          border: '1px solid var(--border-color)',
-                          borderRadius: 8,
-                          padding: 16,
-                          cursor: 'pointer',
-                          transition: 'all 0.2s',
-                        }}
-                        onClick={() => characterClass.selectClass(cls.id)}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.borderColor = 'var(--border-gold)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.borderColor = 'var(--border-color)';
-                        }}
-                      >
-                        <div style={{ fontSize: '1.5rem', marginBottom: 8 }}>{cls.icon}</div>
-                        <h4 style={{ color: 'var(--gold)', margin: '0 0 4px 0' }}>{cls.name}</h4>
-                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', margin: 0 }}>
-                          {cls.description}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Skill Trees */}
-            <div className="rpg-card">
-              <h2 style={{ color: 'var(--gold)', marginBottom: 16 }}>Skill Trees</h2>
-              <p style={{ color: 'var(--text-secondary)', marginBottom: 16 }}>
-                Spend XP to unlock passive bonuses. Total XP available: {char.character.total_xp}
-              </p>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
-                {skillTree.branches.map((branch) => (
-                  <div
-                    key={branch.id}
-                    style={{
-                      background: 'var(--bg-medium)',
-                      border: `1px solid ${branch.color}40`,
-                      borderRadius: 8,
-                      padding: 16,
-                    }}
-                  >
-                    <h3 style={{ color: branch.color, marginBottom: 12 }}>
-                      {branch.icon} {branch.name}
-                    </h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                      {skillTree.nodes
-                        .filter((n) => n.branch_id === branch.id)
-                        .sort((a, b) => a.tier - b.tier)
-                        .map((node) => (
-                          <div
-                            key={node.id}
-                            style={{
-                              display: 'flex',
-                              justifyContent: 'space-between',
-                              alignItems: 'center',
-                              padding: '8px 12px',
-                              background: node.unlocked ? `${branch.color}20` : 'var(--bg-dark)',
-                              border: `1px solid ${node.unlocked ? branch.color : 'var(--border-color)'}`,
-                              borderRadius: 6,
-                              opacity: node.can_unlock || node.unlocked ? 1 : 0.5,
-                            }}
-                          >
-                            <div>
-                              <span style={{ marginRight: 8 }}>{node.icon}</span>
-                              <span style={{ color: node.unlocked ? branch.color : 'var(--text-primary)' }}>
-                                {node.name}
-                              </span>
-                            </div>
-                            {node.unlocked ? (
-                              <span style={{ color: 'var(--success)', fontSize: '0.85rem' }}>Unlocked</span>
-                            ) : node.can_unlock ? (
-                              <RPGButton
-                                size="small"
-                                onClick={() => skillTree.unlockSkill(node.id)}
-                              >
-                                {node.xp_cost} XP
-                              </RPGButton>
-                            ) : (
-                              <span style={{ color: 'var(--text-dim)', fontSize: '0.85rem' }}>
-                                {node.xp_cost} XP
-                              </span>
-                            )}
-                          </div>
-                        ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Territory Progress */}
-            <div className="rpg-card">
-              <h2 style={{ color: 'var(--gold)', marginBottom: 16 }}>Territory Map</h2>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
-                {territory.territories.map((t) => {
-                  return (
-                    <div
-                      key={t.id}
-                      style={{
-                        flex: '1 1 200px',
-                        maxWidth: 250,
-                        background: t.is_current ? `${t.background_color}30` : 'var(--bg-medium)',
-                        border: `2px solid ${t.is_current ? t.background_color : t.discovered ? 'var(--border-gold)' : 'var(--border-color)'}`,
-                        borderRadius: 8,
-                        padding: 16,
-                        opacity: t.is_locked ? 0.5 : 1,
-                        cursor: t.discovered && !t.is_current ? 'pointer' : 'default',
-                      }}
-                      onClick={() => {
-                        if (t.discovered && !t.is_current) {
-                          territory.travelTo(t.id);
-                        }
-                      }}
-                    >
-                      <div style={{ fontSize: '1.5rem', marginBottom: 8 }}>{t.icon}</div>
-                      <h4 style={{ color: t.is_current ? t.background_color : 'var(--text-primary)', margin: '0 0 4px 0' }}>
-                        {t.name}
-                      </h4>
-                      <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', margin: 0 }}>
-                        {t.is_locked ? `Unlocks at Level ${t.unlock_level}` : t.description}
-                      </p>
-                      {t.is_current && (
-                        <span style={{ display: 'inline-block', marginTop: 8, padding: '2px 8px', background: t.background_color, color: '#000', borderRadius: 4, fontSize: '0.75rem', fontWeight: 600 }}>
-                          Current
-                        </span>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
+        {activeTab === 'boss' && (
+          <BossPage
+            character={char.character}
+            stats={buffs.stats}
+            boss={weeklyBoss.boss}
+            loading={weeklyBoss.loading}
+            hpPercentage={weeklyBoss.hpPercentage}
+            damageDealt={weeklyBoss.damageDealt}
+            totalDefeated={weeklyBoss.totalDefeated}
+            weekStart={weeklyBoss.weekStart}
+            weekEnd={weeklyBoss.weekEnd}
+          />
         )}
 
         {activeTab === 'inventory' && (

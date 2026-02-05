@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { WeeklyBoss, BOSS_DAMAGE, getWeekStart, getWeekEnd } from '../types/weeklyBoss';
+import { WeeklyBoss, BOSS_DAMAGE, BOSS_HEAL, getWeekStart, getWeekEnd } from '../types/weeklyBoss';
 import * as bossRepo from '../db/repositories/weeklyBossRepo';
 import * as streakRepo from '../db/repositories/streakRepo';
 
@@ -61,6 +61,20 @@ export function useWeeklyBoss({ grantXP, addShields }: UseWeeklyBossOptions) {
     [boss, grantXP, addShields]
   );
 
+  const healBoss = useCallback(
+    async (healType: keyof typeof BOSS_HEAL, sourceDescription?: string) => {
+      if (!boss || boss.is_defeated) return;
+
+      const healAmount = BOSS_HEAL[healType];
+      const result = await bossRepo.healBoss(boss.id, healType, healAmount, sourceDescription);
+
+      setBoss((prev) => prev ? { ...prev, current_hp: result.newHp } : null);
+
+      return result;
+    },
+    [boss]
+  );
+
   const dismissDefeatNotification = useCallback(() => {
     setJustDefeated(false);
   }, []);
@@ -82,6 +96,7 @@ export function useWeeklyBoss({ grantXP, addShields }: UseWeeklyBossOptions) {
     totalDefeated,
     refresh,
     dealDamage,
+    healBoss,
     dismissDefeatNotification,
   };
 }

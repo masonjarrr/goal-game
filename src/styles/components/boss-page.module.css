@@ -386,6 +386,48 @@
   color: var(--danger);
 }
 
+/* Heal Section */
+.healSection {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
+}
+
+.healTitle {
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  color: var(--danger);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.healGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.healItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: rgba(231, 76, 60, 0.1);
+  border: 1px solid rgba(231, 76, 60, 0.2);
+  border-radius: var(--border-radius);
+}
+
+.healAction {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.healAmount {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  color: var(--danger);
+}
+
 /* Bestiary */
 .bestiary {
   margin-top: 0;

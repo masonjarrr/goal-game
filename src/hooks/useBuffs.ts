@@ -16,9 +16,10 @@ interface UseBuffsOptions {
   ) => Promise<void>;
   cancelBuffExpiry?: (buffLogId: number) => Promise<void>;
   onBuffActivated?: (type: 'buff' | 'debuff') => void;
+  onDebuffActivated?: (debuffName: string) => void;
 }
 
-export function useBuffs({ grantXP, deductXP, scheduleBuffExpiry, cancelBuffExpiry, onBuffActivated }: UseBuffsOptions) {
+export function useBuffs({ grantXP, deductXP, scheduleBuffExpiry, cancelBuffExpiry, onBuffActivated, onDebuffActivated }: UseBuffsOptions) {
   const [definitions, setDefinitions] = useState<BuffDefinition[]>([]);
   const [activeBuffs, setActiveBuffs] = useState<ActiveBuff[]>([]);
   const [stats, setStats] = useState<Stats>({ stamina: 10, willpower: 10, health: 10, focus: 10, charisma: 10 });
@@ -93,6 +94,11 @@ export function useBuffs({ grantXP, deductXP, scheduleBuffExpiry, cancelBuffExpi
         onBuffActivated(def.type);
       }
 
+      // Notify when debuff is activated (boss heals)
+      if (def && def.type === 'debuff' && onDebuffActivated && hasStatEffects && !result.isStacked) {
+        onDebuffActivated(def.name);
+      }
+
       // Schedule/update notification for buff expiry
       if (def && scheduleBuffExpiry) {
         // Cancel existing notification first (if stacking)
@@ -105,7 +111,7 @@ export function useBuffs({ grantXP, deductXP, scheduleBuffExpiry, cancelBuffExpi
 
       refresh();
     },
-    [refresh, definitions, grantXP, scheduleBuffExpiry, cancelBuffExpiry, onBuffActivated]
+    [refresh, definitions, grantXP, scheduleBuffExpiry, cancelBuffExpiry, onBuffActivated, onDebuffActivated]
   );
 
   const deactivateBuff = useCallback(

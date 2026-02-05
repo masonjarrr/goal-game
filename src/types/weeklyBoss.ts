@@ -99,6 +99,12 @@ export const BOSS_DAMAGE = {
   routine_completed: 30,
 };
 
+// Healing values (negative actions that help the boss)
+export const BOSS_HEAL = {
+  debuff_activated: 20,
+  step_missed: 15,
+};
+
 export function getWeekStart(date: Date = new Date()): string {
   const d = new Date(date);
   const day = d.getDay();

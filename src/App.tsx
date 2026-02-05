@@ -121,6 +121,8 @@ function AppContent({ activeTab, setActiveTab }: { activeTab: TabId; setActiveTa
     onStepMissed: async (missedToday: number) => {
       // Apply debuffs based on missed steps
       await applyMissedStepDebuffs(missedToday);
+      // Boss heals when you miss a step
+      weeklyBoss.healBoss('step_missed', 'Missed a step');
       // Refresh buffs to show the new debuffs
       buffs.refresh();
     },
@@ -149,6 +151,10 @@ function AppContent({ activeTab, setActiveTab }: { activeTab: TabId; setActiveTa
       streaks.refresh();
       // Check for combos
       combos.checkAndActivateCombos();
+    },
+    onDebuffActivated: (debuffName) => {
+      // Boss heals when you activate a debuff
+      weeklyBoss.healBoss('debuff_activated', `Activated debuff: ${debuffName}`);
     },
   });
   const autoBackup = useAutoBackup();

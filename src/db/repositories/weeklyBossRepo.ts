@@ -102,6 +102,40 @@ export async function dealDamage(
   return { newHp, isDefeated };
 }
 
+export async function healBoss(
+  bossId: number,
+  healType: string,
+  healAmount: number,
+  sourceDescription?: string
+): Promise<{ newHp: number }> {
+  const db = getDB();
+
+  // Get current boss
+  const boss = getBossById(bossId);
+  if (!boss || boss.is_defeated) {
+    return { newHp: boss?.current_hp || 0 };
+  }
+
+  // Calculate new HP (can't exceed max)
+  const newHp = Math.min(boss.max_hp, boss.current_hp + healAmount);
+
+  // Update boss HP
+  db.run(
+    `UPDATE weekly_boss SET current_hp = ? WHERE id = ?`,
+    [newHp, bossId]
+  );
+
+  // Log the healing as negative damage
+  db.run(
+    `INSERT INTO boss_damage_log (boss_id, damage_type, damage_amount, source_description)
+     VALUES (?, ?, ?, ?)`,
+    [bossId, healType, -healAmount, sourceDescription || null]
+  );
+
+  await persist();
+  return { newHp };
+}
+
 export function getDamageLog(bossId: number, limit: number = 20): Array<{
   id: number;
   damage_type: string;

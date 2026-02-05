@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { WeeklyBoss, BOSS_DAMAGE, BOSS_TEMPLATES } from '../../types/weeklyBoss';
+import { WeeklyBoss, BOSS_DAMAGE, BOSS_HEAL, BOSS_TEMPLATES } from '../../types/weeklyBoss';
 import { Character, Stats } from '../../types/character';
 import { getXPProgress } from '../../utils/constants';
 import { CharacterSprite } from '../character/CharacterSprite';
@@ -194,6 +194,19 @@ export function BossPage({
             <div className={styles.damageItem}>
               <span className={styles.damageAction}>🌅 Complete Routine</span>
               <span className={styles.damageAmount}>-{BOSS_DAMAGE.routine_completed} HP</span>
+            </div>
+          </div>
+          <div className={styles.healSection}>
+            <div className={styles.healTitle}>Boss Heals When...</div>
+            <div className={styles.healGrid}>
+              <div className={styles.healItem}>
+                <span className={styles.healAction}>😔 Activate Debuff</span>
+                <span className={styles.healAmount}>+{BOSS_HEAL.debuff_activated} HP</span>
+              </div>
+              <div className={styles.healItem}>
+                <span className={styles.healAction}>✗ Miss a Step</span>
+                <span className={styles.healAmount}>+{BOSS_HEAL.step_missed} HP</span>
+              </div>
             </div>
           </div>
         </RPGPanel>

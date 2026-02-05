@@ -132,6 +132,20 @@ export async function deleteStep(id: number): Promise<void> {
   await persist();
 }
 
+export async function updateStepTitle(id: number, title: string): Promise<void> {
+  const db = getDB();
+  db.run('UPDATE steps SET title = ? WHERE id = ?', [title, id]);
+  await persist();
+}
+
+export async function bulkUpdateStepTitles(updates: { id: number; title: string }[]): Promise<void> {
+  const db = getDB();
+  for (const update of updates) {
+    db.run('UPDATE steps SET title = ? WHERE id = ?', [update.title, update.id]);
+  }
+  await persist();
+}
+
 export async function deleteQuest(id: number): Promise<void> {
   const db = getDB();
   db.run('DELETE FROM steps WHERE quest_id = ?', [id]);

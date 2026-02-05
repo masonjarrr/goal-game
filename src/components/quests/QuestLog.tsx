@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { GoalWithQuests } from '../../types/quest';
 import { Domain } from '../../types/common';
 import { RPGPanel } from '../ui/RPGPanel';
@@ -55,6 +55,41 @@ export function QuestLog({
   const [questDesc, setQuestDesc] = useState('');
   const [questPriority, setQuestPriority] = useState('normal');
 
+  // Track which goals are expanded - default: active goals expanded, completed collapsed
+  const [expandedGoals, setExpandedGoals] = useState<Set<number>>(() => {
+    const expanded = new Set<number>();
+    goals.forEach((g) => {
+      if (g.status !== 'completed') expanded.add(g.id);
+    });
+    return expanded;
+  });
+
+  // Update expanded state when goals change (new goal added, etc.)
+  useEffect(() => {
+    setExpandedGoals((prev) => {
+      const next = new Set(prev);
+      goals.forEach((g) => {
+        // Auto-expand new active goals
+        if (g.status !== 'completed' && !prev.has(g.id)) {
+          next.add(g.id);
+        }
+      });
+      return next;
+    });
+  }, [goals]);
+
+  const toggleGoal = (goalId: number) => {
+    setExpandedGoals((prev) => {
+      const next = new Set(prev);
+      if (next.has(goalId)) {
+        next.delete(goalId);
+      } else {
+        next.add(goalId);
+      }
+      return next;
+    });
+  };
+
   const handleCreateGoal = () => {
     if (!goalTitle.trim()) return;
     onCreateGoal(goalDomain, goalTitle.trim(), goalDesc.trim());
@@ -71,6 +106,33 @@ export function QuestLog({
     setQuestPriority('normal');
     setShowQuestForm(null);
   };
+
+  // Calculate stats for each goal
+  const getGoalStats = (goal: GoalWithQuests) => {
+    const totalQuests = goal.quests.length;
+    const completedQuests = goal.quests.filter((q) => q.status === 'completed').length;
+    const totalSteps = goal.quests.reduce((acc, q) => acc + q.steps.length, 0);
+    const completedSteps = goal.quests.reduce(
+      (acc, q) => acc + q.steps.filter((s) => s.status === 'completed').length,
+      0
+    );
+    const missedSteps = goal.quests.reduce(
+      (acc, q) => acc + q.steps.filter((s) => s.status === 'missed').length,
+      0
+    );
+    const progressPercent = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
+    return { totalQuests, completedQuests, totalSteps, completedSteps, missedSteps, progressPercent };
+  };
+
+  // Sort goals: active first, then by most recent activity
+  const sortedGoals = useMemo(() => {
+    return [...goals].sort((a, b) => {
+      // Active goals first
+      if (a.status === 'completed' && b.status !== 'completed') return 1;
+      if (a.status !== 'completed' && b.status === 'completed') return -1;
+      return 0;
+    });
+  }, [goals]);
 
   return (
     <div className={styles.questLog}>
@@ -108,42 +170,98 @@ export function QuestLog({
           </div>
         </RPGPanel>
       ) : (
-        goals.map((goal) => (
-          <RPGPanel key={goal.id}>
-            <div className={styles.goalSection}>
-              <div className={styles.goalHeader}>
-                <span className={styles.goalDomainIcon}>{goal.domain_icon}</span>
-                <span className={styles.goalTitle}>{goal.title}</span>
-                <span className={styles.goalDomain}>{goal.domain_name}</span>
-                <RPGButton size="small" variant="primary" onClick={() => setShowQuestForm(goal.id)}>
-                  + Quest
-                </RPGButton>
-                <RPGButton size="small" variant="danger" onClick={() => onDeleteGoal(goal.id)}>
-                  ×
-                </RPGButton>
-              </div>
-              {goal.quests.length === 0 ? (
-                <div className={styles.emptyState}>No quests yet. Add a quest to this goal.</div>
-              ) : (
-                <div className={styles.questsList}>
-                  {goal.quests.map((quest) => (
-                    <QuestCard
-                      key={quest.id}
-                      quest={quest}
-                      onCreateStep={onCreateStep}
-                      onCompleteStep={onCompleteStep}
-                      onUncompleteStep={onUncompleteStep}
-                      onMissStep={onMissStep}
-                      onUnmissStep={onUnmissStep}
-                      onDeleteStep={onDeleteStep}
-                      onDeleteQuest={onDeleteQuest}
-                    />
-                  ))}
+        <div className={styles.goalsContainer}>
+          {sortedGoals.map((goal) => {
+            const stats = getGoalStats(goal);
+            const isExpanded = expandedGoals.has(goal.id);
+            const isCompleted = goal.status === 'completed';
+
+            return (
+              <div
+                key={goal.id}
+                className={`${styles.goalCard} ${isCompleted ? styles.goalCompleted : ''}`}
+              >
+                <div
+                  className={styles.goalHeader}
+                  onClick={() => toggleGoal(goal.id)}
+                >
+                  <span className={`${styles.expandIcon} ${isExpanded ? styles.expanded : ''}`}>
+                    ▶
+                  </span>
+                  <span className={styles.goalDomainIcon}>{goal.domain_icon}</span>
+                  <div className={styles.goalInfo}>
+                    <span className={styles.goalTitle}>{goal.title}</span>
+                    <div className={styles.goalStats}>
+                      <span className={styles.goalStatItem}>
+                        {stats.completedQuests}/{stats.totalQuests} quests
+                      </span>
+                      <span className={styles.goalStatItem}>
+                        {stats.completedSteps}/{stats.totalSteps} steps
+                      </span>
+                      {stats.missedSteps > 0 && (
+                        <span className={`${styles.goalStatItem} ${styles.missed}`}>
+                          {stats.missedSteps} missed
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className={styles.goalProgress}>
+                    <div className={styles.goalProgressBar}>
+                      <div
+                        className={styles.goalProgressFill}
+                        style={{ width: `${stats.progressPercent}%` }}
+                      />
+                    </div>
+                    <span className={styles.goalProgressText}>{stats.progressPercent}%</span>
+                  </div>
+                  <div className={styles.goalActions} onClick={(e) => e.stopPropagation()}>
+                    <RPGButton
+                      size="small"
+                      variant="primary"
+                      onClick={() => setShowQuestForm(goal.id)}
+                    >
+                      +
+                    </RPGButton>
+                    <RPGButton
+                      size="small"
+                      variant="danger"
+                      onClick={() => onDeleteGoal(goal.id)}
+                    >
+                      ×
+                    </RPGButton>
+                  </div>
                 </div>
-              )}
-            </div>
-          </RPGPanel>
-        ))
+
+                {isExpanded && (
+                  <div className={styles.goalContent}>
+                    {goal.quests.length === 0 ? (
+                      <div className={styles.emptyStateSmall}>
+                        No quests yet. Click + to add one.
+                      </div>
+                    ) : (
+                      <div className={styles.questsGrid}>
+                        {goal.quests.map((quest) => (
+                          <QuestCard
+                            key={quest.id}
+                            quest={quest}
+                            compact
+                            onCreateStep={onCreateStep}
+                            onCompleteStep={onCompleteStep}
+                            onUncompleteStep={onUncompleteStep}
+                            onMissStep={onMissStep}
+                            onUnmissStep={onUnmissStep}
+                            onDeleteStep={onDeleteStep}
+                            onDeleteQuest={onDeleteQuest}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       )}
 
       {/* New Goal Modal */}

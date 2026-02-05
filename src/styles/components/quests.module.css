@@ -1,7 +1,7 @@
 .questLog {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 .questToolbar {
@@ -17,41 +17,136 @@
   flex: 1;
 }
 
-.goalSection {
-  margin-bottom: 8px;
+/* Goals Container */
+.goalsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Goal Card - Collapsible */
+.goalCard {
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  transition: border-color var(--transition-fast);
+}
+
+.goalCard:hover {
+  border-color: var(--border-gold);
+}
+
+.goalCompleted {
+  opacity: 0.7;
+}
+
+.goalCompleted .goalTitle {
+  text-decoration: line-through;
+  color: var(--text-dim);
 }
 
 .goalHeader {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 12px;
+  padding: 12px 14px;
+  cursor: pointer;
+  user-select: none;
+  background: var(--bg-medium);
+}
+
+.goalHeader:hover {
+  background: var(--bg-lighter);
 }
 
 .goalDomainIcon {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.goalInfo {
+  flex: 1;
+  min-width: 0;
 }
 
 .goalTitle {
   font-family: var(--font-heading);
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: var(--text-primary);
-  flex: 1;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.goalDomain {
-  font-size: 0.8rem;
-  color: var(--text-dim);
-  padding: 2px 10px;
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
-}
-
-.questsList {
+.goalStats {
   display: flex;
-  flex-direction: column;
   gap: 12px;
-  padding-left: 8px;
+  margin-top: 2px;
+}
+
+.goalStatItem {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.goalStatItem.missed {
+  color: var(--debuff-color);
+}
+
+.goalProgress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.goalProgressBar {
+  width: 60px;
+  height: 6px;
+  background: var(--bg-dark);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.goalProgressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-glow));
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.goalProgressText {
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  color: var(--text-gold);
+  min-width: 32px;
+  text-align: right;
+}
+
+.goalActions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.goalContent {
+  padding: 12px;
+  border-top: 1px solid var(--border-color);
+}
+
+.questsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
+}
+
+.emptyStateSmall {
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  padding: 16px;
 }
 
 /* Quest Card */
@@ -67,17 +162,30 @@
   border-color: var(--border-gold);
 }
 
+.questCardCompact {
+  background: var(--bg-medium);
+}
+
 .questCardHeader {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
+  gap: 10px;
+  padding: 10px 12px;
   cursor: pointer;
   user-select: none;
 }
 
+.questCardCompact .questCardHeader {
+  padding: 8px 10px;
+}
+
+.questHeaderContent {
+  flex: 1;
+  min-width: 0;
+}
+
 .questPriority {
-  width: 4px;
+  width: 3px;
   align-self: stretch;
   border-radius: 2px;
   flex-shrink: 0;
@@ -88,14 +196,52 @@
 .questPriority.legendary { background: var(--priority-legendary); }
 
 .questTitle {
-  flex: 1;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.9rem;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.questCardCompact .questTitle {
+  font-size: 0.85rem;
 }
 
 .questCompleted .questTitle {
   text-decoration: line-through;
   color: var(--text-dim);
+}
+
+.questProgressInline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.questProgressBarSmall {
+  flex: 1;
+  height: 4px;
+  background: var(--bg-dark);
+  border-radius: 2px;
+  overflow: hidden;
+  max-width: 100px;
+}
+
+.questProgressFillSmall {
+  height: 100%;
+  background: var(--gold);
+  border-radius: 2px;
+}
+
+.questProgressTextSmall {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+}
+
+.missedCount {
+  color: var(--debuff-color);
 }
 
 .questMeta {
@@ -114,10 +260,17 @@
   background: var(--bg-lighter);
 }
 
+.questActions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
 .expandIcon {
   color: var(--text-dim);
   transition: transform var(--transition-fast);
-  font-size: 0.8rem;
+  font-size: 0.7rem;
+  flex-shrink: 0;
 }
 
 .expandIcon.expanded {
@@ -126,24 +279,32 @@
 
 /* Steps */
 .stepsSection {
-  padding: 0 16px 14px;
+  padding: 0 12px 10px;
   border-top: 1px solid var(--border-color);
+}
+
+.questCardCompact .stepsSection {
+  padding: 0 10px 8px;
 }
 
 .stepsList {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding-top: 10px;
+  gap: 4px;
+  padding-top: 8px;
 }
 
 .stepItem {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 6px 8px;
+  gap: 8px;
+  padding: 4px 6px;
   border-radius: var(--border-radius);
   transition: background var(--transition-fast);
+}
+
+.stepItemCompact {
+  padding: 3px 4px;
 }
 
 .stepItem:hover {
@@ -151,25 +312,64 @@
 }
 
 .stepPriorityDot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   flex-shrink: 0;
 }
 
-.stepTitle {
-  flex: 1;
-  font-size: 0.95rem;
+.stepActions {
+  display: flex;
+  gap: 4px;
 }
 
 .addStepRow {
   display: flex;
-  gap: 8px;
-  margin-top: 10px;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.addStepRowCompact {
+  margin-top: 6px;
 }
 
 .addStepInput {
   flex: 1;
+}
+
+/* Missed Steps */
+.stepMissed {
+  background: rgba(231, 76, 60, 0.1);
+  border-left: 3px solid var(--debuff-color);
+}
+
+.missedLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.missedIcon {
+  color: var(--debuff-color);
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.missedText {
+  text-decoration: line-through;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
+.missBtn {
+  color: var(--text-dim);
+}
+
+.missBtn:hover {
+  color: var(--debuff-color);
 }
 
 /* Forms */
@@ -195,42 +395,28 @@
   padding: 32px;
 }
 
-/* Missed Steps */
-.stepMissed {
-  background: rgba(231, 76, 60, 0.1);
-  border-left: 3px solid var(--debuff-color);
-}
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .questsGrid {
+    grid-template-columns: 1fr;
+  }
 
-.missedLabel {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex: 1;
-  cursor: pointer;
-  opacity: 0.7;
-}
+  .goalHeader {
+    flex-wrap: wrap;
+  }
 
-.missedIcon {
-  color: var(--debuff-color);
-  font-weight: bold;
-  font-size: 1rem;
-}
+  .goalProgress {
+    order: 10;
+    width: 100%;
+    margin-top: 8px;
+  }
 
-.missedText {
-  text-decoration: line-through;
-  color: var(--text-dim);
-  font-size: 0.95rem;
-}
+  .goalProgressBar {
+    flex: 1;
+  }
 
-.missBtn {
-  color: var(--text-dim);
-}
-
-.missBtn:hover {
-  color: var(--debuff-color);
-}
-
-.stepActions {
-  display: flex;
-  gap: 4px;
+  .goalStats {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
 }

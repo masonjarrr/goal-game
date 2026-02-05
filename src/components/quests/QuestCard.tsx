@@ -7,6 +7,7 @@ import styles from '../../styles/components/quests.module.css';
 
 interface QuestCardProps {
   quest: QuestWithSteps;
+  compact?: boolean;
   onCreateStep: (questId: number, title: string, priority?: string) => void;
   onCompleteStep: (stepId: number, questId: number, priority: string) => void;
   onUncompleteStep: (stepId: number) => void;
@@ -18,6 +19,7 @@ interface QuestCardProps {
 
 export function QuestCard({
   quest,
+  compact = false,
   onCreateStep,
   onCompleteStep,
   onUncompleteStep,
@@ -31,8 +33,10 @@ export function QuestCard({
   const [newStepPriority, setNewStepPriority] = useState('normal');
 
   const completedSteps = quest.steps.filter((s) => s.status === 'completed').length;
+  const missedSteps = quest.steps.filter((s) => s.status === 'missed').length;
   const totalSteps = quest.steps.length;
   const isCompleted = quest.status === 'completed';
+  const progressPercent = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
 
   const handleAddStep = () => {
     if (!newStepTitle.trim()) return;
@@ -45,20 +49,38 @@ export function QuestCard({
     p === 'legendary' ? 'var(--priority-legendary)' : p === 'important' ? 'var(--priority-important)' : 'var(--priority-normal)';
 
   return (
-    <div className={`${styles.questCard} ${isCompleted ? styles.questCompleted : ''}`}>
+    <div className={`${styles.questCard} ${isCompleted ? styles.questCompleted : ''} ${compact ? styles.questCardCompact : ''}`}>
       <div className={styles.questCardHeader} onClick={() => setExpanded(!expanded)}>
-        <div
-          className={`${styles.questPriority} ${styles[quest.priority]}`}
-        />
-        <span className={styles.questTitle}>{quest.title}</span>
-        <span className={styles.questMeta}>
-          <span className={styles.questStepCount}>
-            {completedSteps}/{totalSteps}
+        <div className={`${styles.questPriority} ${styles[quest.priority]}`} />
+        <div className={styles.questHeaderContent}>
+          <span className={styles.questTitle}>{quest.title}</span>
+          {compact && (
+            <div className={styles.questProgressInline}>
+              <div className={styles.questProgressBarSmall}>
+                <div
+                  className={styles.questProgressFillSmall}
+                  style={{ width: `${progressPercent}%` }}
+                />
+              </div>
+              <span className={styles.questProgressTextSmall}>
+                {completedSteps}/{totalSteps}
+                {missedSteps > 0 && <span className={styles.missedCount}> ({missedSteps} ✗)</span>}
+              </span>
+            </div>
+          )}
+        </div>
+        {!compact && (
+          <span className={styles.questMeta}>
+            <span className={styles.questStepCount}>
+              {completedSteps}/{totalSteps}
+            </span>
           </span>
-          <RPGButton size="small" variant="danger" onClick={(e) => { e.stopPropagation(); onDeleteQuest(quest.id); }}>
+        )}
+        <div className={styles.questActions} onClick={(e) => e.stopPropagation()}>
+          <RPGButton size="small" variant="danger" onClick={() => onDeleteQuest(quest.id)}>
             ×
           </RPGButton>
-        </span>
+        </div>
         <span className={`${styles.expandIcon} ${expanded ? styles.expanded : ''}`}>▶</span>
       </div>
 
@@ -67,11 +89,11 @@ export function QuestCard({
           <div className={styles.stepsList}>
             {quest.steps.map((step) => {
               const isMissed = step.status === 'missed';
-              const isCompleted = step.status === 'completed';
+              const stepCompleted = step.status === 'completed';
               const isPending = step.status === 'pending';
 
               return (
-                <div key={step.id} className={`${styles.stepItem} ${isMissed ? styles.stepMissed : ''}`}>
+                <div key={step.id} className={`${styles.stepItem} ${isMissed ? styles.stepMissed : ''} ${compact ? styles.stepItemCompact : ''}`}>
                   <div
                     className={styles.stepPriorityDot}
                     style={{ background: priorityColor(step.priority) }}
@@ -83,7 +105,7 @@ export function QuestCard({
                     </span>
                   ) : (
                     <RPGCheckbox
-                      checked={isCompleted}
+                      checked={stepCompleted}
                       onChange={(checked) => {
                         if (checked) {
                           onCompleteStep(step.id, quest.id, step.priority);
@@ -116,7 +138,7 @@ export function QuestCard({
           </div>
 
           {!isCompleted && (
-            <div className={styles.addStepRow}>
+            <div className={`${styles.addStepRow} ${compact ? styles.addStepRowCompact : ''}`}>
               <div className={styles.addStepInput}>
                 <RPGInput
                   value={newStepTitle}
@@ -125,13 +147,15 @@ export function QuestCard({
                   onKeyDown={(e) => e.key === 'Enter' && handleAddStep()}
                 />
               </div>
-              <RPGSelect value={newStepPriority} onChange={(e) => setNewStepPriority(e.target.value)}>
-                <option value="normal">Normal</option>
-                <option value="important">Important</option>
-                <option value="legendary">Legendary</option>
-              </RPGSelect>
+              {!compact && (
+                <RPGSelect value={newStepPriority} onChange={(e) => setNewStepPriority(e.target.value)}>
+                  <option value="normal">Normal</option>
+                  <option value="important">Important</option>
+                  <option value="legendary">Legendary</option>
+                </RPGSelect>
+              )}
               <RPGButton variant="primary" onClick={handleAddStep}>
-                Add
+                +
               </RPGButton>
             </div>
           )}

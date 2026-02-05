@@ -1,0 +1,264 @@
+.weeklyReviewPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.weekHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.weekTitle {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  color: var(--text-gold);
+}
+
+.weekDates {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.summaryCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  text-align: center;
+}
+
+.summaryIcon {
+  font-size: 1.5rem;
+  margin-bottom: 6px;
+}
+
+.summaryValue {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  color: var(--text-gold);
+}
+
+.summaryLabel {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 2px;
+}
+
+.summaryCard.highlight {
+  background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(46, 204, 113, 0.05));
+  border-color: rgba(46, 204, 113, 0.3);
+}
+
+.reflectionSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.reflectionField {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.reflectionLabel {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  color: var(--text-gold);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reflectionIcon {
+  font-size: 1rem;
+}
+
+.reflectionTextarea {
+  padding: 12px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  min-height: 80px;
+  resize: vertical;
+}
+
+.reflectionTextarea:focus {
+  outline: none;
+  border-color: var(--border-gold);
+}
+
+.reflectionTextarea::placeholder {
+  color: var(--text-dim);
+}
+
+.prioritiesSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.priorityInput {
+  display: flex;
+  gap: 8px;
+}
+
+.priorityInput input {
+  flex: 1;
+  padding: 10px 12px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+}
+
+.priorityInput input:focus {
+  outline: none;
+  border-color: var(--border-gold);
+}
+
+.priorityList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.priorityItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+}
+
+.priorityNumber {
+  font-family: var(--font-heading);
+  color: var(--text-gold);
+  min-width: 24px;
+}
+
+.priorityText {
+  flex: 1;
+  font-size: 0.9rem;
+}
+
+.removeBtn {
+  padding: 4px 8px;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.removeBtn:hover {
+  color: var(--debuff-color);
+}
+
+.completedBanner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(46, 204, 113, 0.15), rgba(46, 204, 113, 0.08));
+  border: 1px solid rgba(46, 204, 113, 0.3);
+  border-radius: var(--border-radius);
+  color: var(--buff-color);
+  font-family: var(--font-heading);
+  font-size: 1rem;
+}
+
+.completedIcon {
+  font-size: 1.5rem;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.historySection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.historyItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.historyItem:hover {
+  border-color: var(--border-gold);
+}
+
+.historyItem.completed {
+  border-left: 3px solid var(--buff-color);
+}
+
+.historyWeek {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  min-width: 100px;
+}
+
+.historyStats {
+  flex: 1;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.historyXp {
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  color: var(--text-gold);
+}
+
+.emptyState {
+  text-align: center;
+  color: var(--text-dim);
+  font-style: italic;
+  padding: 30px 20px;
+}
+
+@media (max-width: 768px) {
+  .summaryGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .priorityInput {
+    flex-direction: column;
+  }
+}

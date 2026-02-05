@@ -1,0 +1,186 @@
+.settingsPanel {
+  margin-bottom: 1rem;
+}
+
+.settingsTitle {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  color: var(--text-gold);
+  margin: 0 0 0.75rem 0;
+}
+
+.settingsDescription {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.settingRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.settingRow:last-child {
+  border-bottom: none;
+}
+
+.settingLabel {
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+/* iOS Instructions */
+.iosInstructions {
+  background: rgba(200, 168, 78, 0.1);
+  border: 1px solid var(--text-gold);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.iosTitle {
+  color: var(--text-gold);
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.iosText {
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  margin: 0 0 0.75rem 0;
+}
+
+.iosList {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.iosList li {
+  margin-bottom: 0.35rem;
+}
+
+/* Messages */
+.deniedMessage,
+.errorMessage {
+  background: rgba(231, 76, 60, 0.15);
+  border: 1px solid rgba(231, 76, 60, 0.5);
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.deniedMessage p,
+.errorMessage p {
+  color: #e74c3c;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* Status Indicator */
+.statusIndicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  color: #2ecc71;
+  font-size: 0.85rem;
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  background: #2ecc71;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Reminder Picker */
+.reminderPicker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.reminderLabel {
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  color: var(--text-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.reminderSelect {
+  padding: 0.5rem 0.75rem;
+  background: var(--surface-dark);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.reminderSelect:hover {
+  border-color: var(--text-gold);
+}
+
+.reminderSelect:focus {
+  outline: none;
+  border-color: var(--text-gold);
+  box-shadow: 0 0 0 2px rgba(200, 168, 78, 0.2);
+}
+
+.reminderSelect:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.reminderSelect option {
+  background: var(--surface-dark);
+  color: var(--text-primary);
+}
+
+/* Debug info */
+.debugInfo {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: rgba(100, 100, 100, 0.1);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 0.75rem;
+}
+
+.debugLabel {
+  color: var(--text-muted);
+  margin: 0 0 0.25rem 0;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+}
+
+.debugToken {
+  color: #2ecc71;
+  margin: 0 0 0.5rem 0;
+  font-family: monospace;
+  word-break: break-all;
+}
+
+.debugError {
+  color: #e74c3c;
+  margin: 0 0 0.5rem 0;
+  font-weight: 600;
+}

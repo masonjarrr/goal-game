@@ -6,9 +6,12 @@ import { XP_PER_STEP, XP_QUEST_COMPLETE, XP_GOAL_COMPLETE } from '../utils/const
 
 interface UseQuestsOptions {
   grantXP: (amount: number, reason: string, sourceType: string, sourceId?: number) => Promise<any>;
+  onStepComplete?: () => void;
+  onQuestComplete?: () => void;
+  onGoalComplete?: () => void;
 }
 
-export function useQuests({ grantXP }: UseQuestsOptions) {
+export function useQuests({ grantXP, onStepComplete, onQuestComplete, onGoalComplete }: UseQuestsOptions) {
   const [goals, setGoals] = useState<GoalWithQuests[]>([]);
   const [domains] = useState<Domain[]>(() => questRepo.getDomains());
   const [filterDomain, setFilterDomain] = useState<number | undefined>(undefined);
@@ -53,12 +56,22 @@ export function useQuests({ grantXP }: UseQuestsOptions) {
       const xp = XP_PER_STEP[priority] || 10;
       await grantXP(xp, `Completed step`, 'step', stepId);
 
+      // Notify daily quest tracker
+      if (onStepComplete) {
+        onStepComplete();
+      }
+
       // Check if quest is now complete (all steps done)
       const steps = questRepo.getSteps(questId);
       const allDone = steps.every((s) => s.status === 'completed');
       if (allDone && steps.length > 0) {
         await questRepo.updateQuestStatus(questId, 'completed');
         await grantXP(XP_QUEST_COMPLETE, `Completed quest`, 'quest', questId);
+
+        // Notify quest completion
+        if (onQuestComplete) {
+          onQuestComplete();
+        }
 
         // Check if goal is complete (all quests done)
         const quest = questRepo.getQuestWithSteps(questId);
@@ -68,13 +81,18 @@ export function useQuests({ grantXP }: UseQuestsOptions) {
           if (allQuestsDone) {
             await questRepo.updateGoalStatus(quest.goal_id, 'completed');
             await grantXP(XP_GOAL_COMPLETE, `Completed goal`, 'goal', quest.goal_id);
+
+            // Notify goal completion
+            if (onGoalComplete) {
+              onGoalComplete();
+            }
           }
         }
       }
 
       refresh();
     },
-    [refresh, grantXP]
+    [refresh, grantXP, onStepComplete, onQuestComplete, onGoalComplete]
   );
 
   const uncompleteStep = useCallback(

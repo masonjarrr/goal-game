@@ -1,0 +1,239 @@
+.comboPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.comboGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.comboCard {
+  display: flex;
+  flex-direction: column;
+  padding: 14px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  transition: all var(--transition-fast);
+}
+
+.comboCard:hover {
+  border-color: var(--border-gold);
+}
+
+.comboCard.ready {
+  background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(46, 204, 113, 0.05));
+  border-color: rgba(46, 204, 113, 0.4);
+  animation: comboReady 2s ease-in-out infinite;
+}
+
+.comboCard.inProgress {
+  border-left: 3px solid var(--text-gold);
+}
+
+.comboHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.comboIcon {
+  font-size: 1.8rem;
+}
+
+.comboInfo {
+  flex: 1;
+}
+
+.comboName {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.comboXp {
+  font-size: 0.8rem;
+  color: var(--text-gold);
+  font-family: var(--font-heading);
+}
+
+.comboDesc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.comboBuffs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.comboBuff {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: var(--bg-medium);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.comboBuff.active {
+  background: rgba(46, 204, 113, 0.15);
+  border-color: rgba(46, 204, 113, 0.3);
+  color: var(--buff-color);
+}
+
+.comboBuff.missing {
+  opacity: 0.5;
+}
+
+.buffCheck {
+  font-size: 0.7rem;
+}
+
+.comboProgress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.progressTrack {
+  flex: 1;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--text-gold), #ffd700);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progressFill.complete {
+  background: linear-gradient(90deg, var(--buff-color), #4ade80);
+}
+
+.progressText {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  min-width: 40px;
+  text-align: right;
+}
+
+.comboActions {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.readyBanner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  background: linear-gradient(135deg, rgba(46, 204, 113, 0.2), rgba(46, 204, 113, 0.1));
+  border: 1px solid rgba(46, 204, 113, 0.3);
+  border-radius: var(--border-radius);
+  color: var(--buff-color);
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  animation: readyPulse 1.5s ease-in-out infinite;
+}
+
+.emptyState {
+  text-align: center;
+  color: var(--text-dim);
+  font-style: italic;
+  padding: 30px 20px;
+}
+
+/* Notification toast for combo ready */
+.comboToast {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: linear-gradient(135deg, rgba(46, 204, 113, 0.95), rgba(34, 197, 94, 0.95));
+  border: 1px solid rgba(46, 204, 113, 0.5);
+  border-radius: var(--border-radius);
+  color: white;
+  box-shadow: 0 4px 16px rgba(46, 204, 113, 0.4);
+  z-index: 1000;
+  animation: slideIn 0.3s ease-out;
+}
+
+.toastIcon {
+  font-size: 1.5rem;
+}
+
+.toastContent {
+  flex: 1;
+}
+
+.toastTitle {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  margin-bottom: 2px;
+}
+
+.toastXp {
+  font-size: 0.8rem;
+  opacity: 0.9;
+}
+
+@keyframes comboReady {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(46, 204, 113, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(46, 204, 113, 0.4);
+  }
+}
+
+@keyframes readyPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .comboGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .comboToast {
+    left: 20px;
+    right: 20px;
+  }
+}

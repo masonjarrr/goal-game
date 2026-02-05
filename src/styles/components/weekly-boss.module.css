@@ -1,0 +1,230 @@
+.bossPanel {
+  margin-bottom: 12px;
+}
+
+.bossButton {
+  width: 100%;
+}
+
+.bossContent {
+  margin-top: 8px;
+}
+
+.bossHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.bossIcon {
+  font-size: 2.5rem;
+  filter: drop-shadow(0 0 8px rgba(231, 76, 60, 0.5));
+}
+
+.bossIcon.defeated {
+  filter: grayscale(1) opacity(0.5);
+}
+
+.bossInfo {
+  flex: 1;
+}
+
+.bossName {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.bossName.defeated {
+  text-decoration: line-through;
+  color: var(--text-dim);
+}
+
+.bossDescription {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+.bossStatus {
+  text-align: right;
+}
+
+.bossReward {
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  color: var(--text-gold);
+}
+
+.bossDifficulty {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+/* HP Bar */
+.hpSection {
+  margin-bottom: 16px;
+}
+
+.hpLabel {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  margin-bottom: 6px;
+}
+
+.hpTitle {
+  color: var(--text-secondary);
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hpValue {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.hpBar {
+  height: 16px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.hpFill {
+  height: 100%;
+  background: linear-gradient(90deg, #c0392b, #e74c3c);
+  border-radius: 7px;
+  transition: width 0.5s ease-out;
+  position: relative;
+}
+
+.hpFill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.2), transparent);
+  border-radius: 7px 7px 0 0;
+}
+
+.hpFill.low {
+  background: linear-gradient(90deg, #27ae60, #2ecc71);
+}
+
+.hpFill.defeated {
+  background: var(--text-dim);
+}
+
+/* Damage stats */
+.damageStats {
+  display: flex;
+  gap: 16px;
+  padding: 12px;
+  background: var(--bg-dark);
+  border-radius: var(--border-radius);
+  margin-bottom: 16px;
+}
+
+.damageStat {
+  flex: 1;
+  text-align: center;
+}
+
+.damageStatValue {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  color: var(--text-gold);
+}
+
+.damageStatLabel {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+/* Damage guide */
+.damageGuide {
+  padding: 12px;
+  background: rgba(200, 168, 78, 0.08);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--border-radius);
+}
+
+.damageGuideTitle {
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  color: var(--text-gold);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.damageGuideList {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  font-size: 0.75rem;
+}
+
+.damageGuideItem {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-secondary);
+}
+
+.damageGuideAmount {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+/* Defeated state */
+.defeatedBanner {
+  text-align: center;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(46, 204, 113, 0.15), rgba(39, 174, 96, 0.1));
+  border: 1px solid var(--stat-green);
+  border-radius: var(--border-radius);
+  margin-bottom: 16px;
+}
+
+.defeatedTitle {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  color: var(--stat-green);
+  margin-bottom: 4px;
+}
+
+.defeatedText {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.defeatedRewards {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: var(--text-gold);
+}
+
+/* Week info */
+.weekInfo {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-top: 12px;
+}
+
+/* Loading */
+.loading {
+  text-align: center;
+  color: var(--text-dim);
+  padding: 20px;
+  font-style: italic;
+}

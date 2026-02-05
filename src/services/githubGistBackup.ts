@@ -67,6 +67,33 @@ function base64ToUint8Array(base64: string): Uint8Array {
   return bytes;
 }
 
+// Search for existing backup gist by description
+async function findExistingBackupGist(token: string): Promise<string | null> {
+  try {
+    const response = await fetch('https://api.github.com/gists?per_page=100', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/vnd.github+json',
+      },
+    });
+
+    if (!response.ok) return null;
+
+    const gists = await response.json();
+
+    // Find gist with matching description
+    for (const gist of gists) {
+      if (gist.description === GIST_DESCRIPTION) {
+        return gist.id;
+      }
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 // Get or create backup gist
 async function getOrCreateGist(token: string): Promise<string> {
   const existingGistId = localStorage.getItem(STORAGE_KEY_GIST_ID);
@@ -85,6 +112,13 @@ async function getOrCreateGist(token: string): Promise<string> {
     }
     // Gist was deleted, remove stored ID
     localStorage.removeItem(STORAGE_KEY_GIST_ID);
+  }
+
+  // Search for existing backup gist (in case app was reinstalled)
+  const foundGistId = await findExistingBackupGist(token);
+  if (foundGistId) {
+    localStorage.setItem(STORAGE_KEY_GIST_ID, foundGistId);
+    return foundGistId;
   }
 
   // Create new gist
@@ -168,8 +202,17 @@ export async function listBackups(): Promise<{ fileName: string; size: number }[
   const token = getToken();
   if (!token) return [];
 
-  const gistId = localStorage.getItem(STORAGE_KEY_GIST_ID);
-  if (!gistId) return [];
+  let gistId = localStorage.getItem(STORAGE_KEY_GIST_ID);
+
+  // If no gist ID stored, try to find existing backup gist
+  if (!gistId) {
+    gistId = await findExistingBackupGist(token);
+    if (gistId) {
+      localStorage.setItem(STORAGE_KEY_GIST_ID, gistId);
+    } else {
+      return [];
+    }
+  }
 
   try {
     const response = await fetch(`https://api.github.com/gists/${gistId}`, {

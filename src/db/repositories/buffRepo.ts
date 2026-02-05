@@ -47,20 +47,60 @@ export async function deleteBuffDefinition(id: number): Promise<void> {
   await persist();
 }
 
-export async function activateBuff(definitionId: number): Promise<number> {
+export interface ActivateBuffResult {
+  logId: number;
+  isStacked: boolean;
+  newExpiresAt: string;
+}
+
+export async function activateBuff(definitionId: number): Promise<ActivateBuffResult> {
   const db = getDB();
   const defResult = db.exec('SELECT duration_hours FROM buff_definitions WHERE id = ?', [definitionId]);
   if (!defResult.length) throw new Error('Buff definition not found');
   const hours = defResult[0].values[0][0] as number;
 
+  // Check if there's an active buff for this definition
+  const activeResult = db.exec(
+    `SELECT id, expires_at FROM buff_log
+     WHERE definition_id = ? AND is_active = 1 AND expires_at > datetime('now')
+     ORDER BY expires_at DESC LIMIT 1`,
+    [definitionId]
+  );
+
+  if (activeResult.length && activeResult[0].values.length) {
+    // Stack: extend existing buff
+    const existingLogId = activeResult[0].values[0][0] as number;
+
+    // Add hours to current expires_at
+    db.run(
+      `UPDATE buff_log SET expires_at = datetime(expires_at, '+' || ? || ' hours')
+       WHERE id = ?`,
+      [hours, existingLogId]
+    );
+
+    // Get the new expires_at
+    const newExpiry = db.exec('SELECT expires_at FROM buff_log WHERE id = ?', [existingLogId]);
+    const newExpiresAt = newExpiry[0].values[0][0] as string;
+
+    await persist();
+    return { logId: existingLogId, isStacked: true, newExpiresAt };
+  }
+
+  // No active buff, create new one
   db.run(
     `INSERT INTO buff_log (definition_id, expires_at)
      VALUES (?, datetime('now', '+' || ? || ' hours'))`,
     [definitionId, hours]
   );
   const result = db.exec('SELECT last_insert_rowid()');
+  const logId = result[0].values[0][0] as number;
+
+  // Get the expires_at for the new entry
+  const expiryResult = db.exec('SELECT expires_at FROM buff_log WHERE id = ?', [logId]);
+  const newExpiresAt = expiryResult[0].values[0][0] as string;
+
   await persist();
-  return result[0].values[0][0] as number;
+  return { logId, isStacked: false, newExpiresAt };
 }
 
 export async function deactivateBuff(logId: number): Promise<void> {

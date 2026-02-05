@@ -143,10 +143,14 @@
   width: 200px;
 }
 
+.headerEnergy {
+  width: 160px;
+}
+
 .headerRight {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
 /* Main content area */

@@ -4,7 +4,7 @@ import type { SqlValue } from 'sql.js';
 
 export function getEvents(date?: string, startDate?: string, endDate?: string): PlannerEvent[] {
   const db = getDB();
-  let sql = `SELECT id, title, description, date, start_time, end_time, quest_id, step_id, is_completed, created_at
+  let sql = `SELECT id, title, description, date, start_time, end_time, quest_id, step_id, is_completed, created_at, reminder_minutes
              FROM planner_events WHERE 1=1`;
   const params: string[] = [];
 
@@ -35,6 +35,7 @@ export function getEvents(date?: string, startDate?: string, endDate?: string): 
     step_id: row[7] as number | null,
     is_completed: Boolean(row[8]),
     created_at: row[9] as string,
+    reminder_minutes: row[10] as number | null,
   }));
 }
 
@@ -45,13 +46,14 @@ export async function createEvent(
   startTime: string | null = null,
   endTime: string | null = null,
   questId: number | null = null,
-  stepId: number | null = null
+  stepId: number | null = null,
+  reminderMinutes: number | null = null
 ): Promise<number> {
   const db = getDB();
   db.run(
-    `INSERT INTO planner_events (title, description, date, start_time, end_time, quest_id, step_id)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
-    [title, description, date, startTime, endTime, questId, stepId]
+    `INSERT INTO planner_events (title, description, date, start_time, end_time, quest_id, step_id, reminder_minutes)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    [title, description, date, startTime, endTime, questId, stepId, reminderMinutes]
   );
   const result = db.exec('SELECT last_insert_rowid()');
   await persist();
@@ -84,13 +86,38 @@ export async function updateEvent(
   startTime: string | null = null,
   endTime: string | null = null,
   questId: number | null = null,
-  stepId: number | null = null
+  stepId: number | null = null,
+  reminderMinutes: number | null = null
 ): Promise<void> {
   const db = getDB();
   db.run(
-    `UPDATE planner_events SET title = ?, description = ?, date = ?, start_time = ?, end_time = ?, quest_id = ?, step_id = ?
+    `UPDATE planner_events SET title = ?, description = ?, date = ?, start_time = ?, end_time = ?, quest_id = ?, step_id = ?, reminder_minutes = ?
      WHERE id = ?`,
-    [title, description, date, startTime, endTime, questId, stepId, id]
+    [title, description, date, startTime, endTime, questId, stepId, reminderMinutes, id]
   );
   await persist();
+}
+
+export function getEventById(id: number): PlannerEvent | null {
+  const db = getDB();
+  const result = db.exec(
+    `SELECT id, title, description, date, start_time, end_time, quest_id, step_id, is_completed, created_at, reminder_minutes
+     FROM planner_events WHERE id = ?`,
+    [id]
+  );
+  if (!result.length || !result[0].values.length) return null;
+  const row = result[0].values[0];
+  return {
+    id: row[0] as number,
+    title: row[1] as string,
+    description: row[2] as string,
+    date: row[3] as string,
+    start_time: row[4] as string | null,
+    end_time: row[5] as string | null,
+    quest_id: row[6] as number | null,
+    step_id: row[7] as number | null,
+    is_completed: Boolean(row[8]),
+    created_at: row[9] as string,
+    reminder_minutes: row[10] as number | null,
+  };
 }

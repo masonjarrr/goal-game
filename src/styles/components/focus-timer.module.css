@@ -1,0 +1,355 @@
+.focusTimerPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.timerContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.08), rgba(79, 70, 229, 0.05));
+  border: 1px solid rgba(147, 51, 234, 0.2);
+  border-radius: var(--border-radius);
+}
+
+.timerCircleWrapper {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin-bottom: 20px;
+}
+
+.timerCircle {
+  transform: rotate(-90deg);
+}
+
+.timerCircleBg {
+  fill: none;
+  stroke: var(--bg-dark);
+  stroke-width: 8;
+}
+
+.timerCircleProgress {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+}
+
+.timerCircleProgress.work {
+  stroke: #9333ea;
+}
+
+.timerCircleProgress.shortBreak {
+  stroke: #22c55e;
+}
+
+.timerCircleProgress.longBreak {
+  stroke: #3b82f6;
+}
+
+.timerCircleProgress.idle {
+  stroke: var(--text-dim);
+}
+
+.timerDisplay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.timerTime {
+  font-family: var(--font-heading);
+  font-size: 2.5rem;
+  color: var(--text-primary);
+  letter-spacing: 0.05em;
+}
+
+.timerPhase {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.timerPhase.work {
+  color: #9333ea;
+}
+
+.timerPhase.shortBreak {
+  color: #22c55e;
+}
+
+.timerPhase.longBreak {
+  color: #3b82f6;
+}
+
+.timerControls {
+  display: flex;
+  gap: 12px;
+}
+
+.sessionCount {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.sessionDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--bg-dark);
+  border: 2px solid var(--border-color);
+}
+
+.sessionDot.completed {
+  background: #9333ea;
+  border-color: #9333ea;
+}
+
+.sessionDot.active {
+  border-color: #9333ea;
+  animation: sessionPulse 1.5s ease-in-out infinite;
+}
+
+/* Stats Section */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.statCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+}
+
+.statIcon {
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+}
+
+.statValue {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  color: var(--text-gold);
+}
+
+.statLabel {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 4px;
+}
+
+/* Settings */
+.settingsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.settingItem {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.settingLabel {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.settingInput {
+  padding: 8px 12px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+}
+
+.settingInput:focus {
+  outline: none;
+  border-color: var(--border-gold);
+}
+
+.toggleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.toggleRow:last-child {
+  border-bottom: none;
+}
+
+.toggleLabel {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.toggle.active {
+  background: rgba(147, 51, 234, 0.3);
+  border-color: #9333ea;
+}
+
+.toggleKnob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background: var(--text-dim);
+  border-radius: 50%;
+  transition: all var(--transition-fast);
+}
+
+.toggle.active .toggleKnob {
+  left: 22px;
+  background: #9333ea;
+}
+
+/* Recent Sessions */
+.sessionList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sessionItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+}
+
+.sessionItem.completed {
+  border-left: 3px solid #22c55e;
+}
+
+.sessionItem.cancelled {
+  border-left: 3px solid var(--debuff-color);
+  opacity: 0.6;
+}
+
+.sessionTime {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  min-width: 60px;
+}
+
+.sessionInfo {
+  flex: 1;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.sessionXp {
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  color: var(--text-gold);
+}
+
+/* Floating Timer Button */
+.floatingTimer {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.9), rgba(79, 70, 229, 0.9));
+  border: 1px solid rgba(147, 51, 234, 0.5);
+  border-radius: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(147, 51, 234, 0.4);
+  z-index: 900;
+  transition: all var(--transition-fast);
+}
+
+.floatingTimer:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(147, 51, 234, 0.5);
+}
+
+.floatingTimer.running {
+  animation: timerPulse 2s ease-in-out infinite;
+}
+
+.floatingTimerIcon {
+  font-size: 1.2rem;
+}
+
+.floatingTimerTime {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  color: white;
+}
+
+@keyframes sessionPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(147, 51, 234, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(147, 51, 234, 0);
+  }
+}
+
+@keyframes timerPulse {
+  0%, 100% {
+    box-shadow: 0 4px 16px rgba(147, 51, 234, 0.4);
+  }
+  50% {
+    box-shadow: 0 4px 24px rgba(147, 51, 234, 0.6);
+  }
+}
+
+@media (max-width: 768px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .settingsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .floatingTimer {
+    bottom: 16px;
+    right: 16px;
+    padding: 10px 14px;
+  }
+}

@@ -11,4 +11,5 @@ export interface PlannerEvent {
   step_id: number | null;
   is_completed: boolean;
   created_at: string;
+  reminder_minutes: number | null; // Minutes before event to send notification
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { BuffDefinition, ActiveBuff } from '../../types/buff';
+import { StreakInfo, StreakMilestone, getLatestMilestone } from '../../types/streak';
 import { STAT_NAMES } from '../../types/common';
 import { parseStatEffects } from '../../utils/buffEngine';
 import { RPGPanel } from '../ui/RPGPanel';
@@ -22,6 +23,11 @@ interface BuffTrackerProps {
   onDeleteDefinition: (id: number) => void;
   onActivateBuff: (definitionId: number) => void;
   onDeactivateBuff: (logId: number) => void;
+  streakInfos?: Map<number, StreakInfo>;
+  shieldCount?: number;
+  onUseShield?: (buffDefinitionId: number) => Promise<boolean>;
+  getUnclaimedMilestones?: (buffDefinitionId: number) => StreakMilestone[];
+  onClaimMilestones?: (buffDefinitionId: number) => Promise<StreakMilestone[]>;
 }
 
 interface Preset {
@@ -80,6 +86,19 @@ const PRESETS: Preset[] = [
 
 const BUFF_ICONS = ['💪', '🧘', '😴', '📚', '🏃', '🍎', '💧', '☀', '🎵', '🧠', '⚡', '🛡', '🍕', '📱', '🎮', '😤', '🍺', '☕', '🥗', '📝', '🧊', '🌅', '🤝', '🤲', '🎨', '🙏', '🍱', '🧹', '💰', '🛋', '😵', '📺', '🚬', '🚫', '🌙', '💸', '🌧', '🚪', '🥤', '😡', '🏋'];
 
+function formatDuration(hours: number): string {
+  const totalMinutes = Math.round(hours * 60);
+  if (totalMinutes < 60) {
+    return `${totalMinutes}m`;
+  }
+  const h = Math.floor(totalMinutes / 60);
+  const m = totalMinutes % 60;
+  if (m === 0) {
+    return `${h}h`;
+  }
+  return `${h}h ${m}m`;
+}
+
 export function BuffTracker({
   definitions,
   activeBuffs,
@@ -87,13 +106,18 @@ export function BuffTracker({
   onDeleteDefinition,
   onActivateBuff,
   onDeactivateBuff,
+  streakInfos,
+  shieldCount = 0,
+  onUseShield,
+  getUnclaimedMilestones,
+  onClaimMilestones,
 }: BuffTrackerProps) {
   const [showForm, setShowForm] = useState(false);
   const [formName, setFormName] = useState('');
   const [formDesc, setFormDesc] = useState('');
   const [formType, setFormType] = useState('buff');
   const [formIcon, setFormIcon] = useState('💪');
-  const [formDuration, setFormDuration] = useState(24);
+  const [formDurationMinutes, setFormDurationMinutes] = useState(1440); // Default 24 hours in minutes
   const [formStats, setFormStats] = useState<Record<string, number>>({});
 
   const applyPreset = (presetIndex: string) => {
@@ -104,7 +128,7 @@ export function BuffTracker({
     setFormDesc(preset.description);
     setFormType(preset.type);
     setFormIcon(preset.icon);
-    setFormDuration(preset.duration);
+    setFormDurationMinutes(preset.duration * 60); // Convert hours to minutes
     setFormStats({ ...preset.stats });
   };
 
@@ -113,14 +137,15 @@ export function BuffTracker({
     setFormDesc('');
     setFormType('buff');
     setFormIcon('💪');
-    setFormDuration(24);
+    setFormDurationMinutes(1440); // 24 hours in minutes
     setFormStats({});
   };
 
   const handleCreate = () => {
     if (!formName.trim()) return;
     const filteredStats = Object.fromEntries(Object.entries(formStats).filter(([, v]) => v !== 0));
-    onCreateDefinition(formName.trim(), formDesc.trim(), formType, formIcon, formDuration, JSON.stringify(filteredStats));
+    const durationHours = formDurationMinutes / 60; // Convert minutes to hours (supports decimals)
+    onCreateDefinition(formName.trim(), formDesc.trim(), formType, formIcon, durationHours, JSON.stringify(filteredStats));
     resetForm();
     setShowForm(false);
   };
@@ -149,6 +174,16 @@ export function BuffTracker({
         <RPGButton variant="primary" onClick={() => { resetForm(); setShowForm(true); }}>
           + New Buff/Debuff
         </RPGButton>
+      </div>
+
+      {/* Streak Shield Inventory */}
+      <div className={styles.shieldInventory}>
+        <span className={styles.shieldIcon}>🛡️</span>
+        <div className={styles.shieldInfo}>
+          <div className={styles.shieldTitle}>Streak Shields</div>
+          <div className={styles.shieldDesc}>Protects a streak if you miss a day</div>
+        </div>
+        <span className={styles.shieldCount}>{shieldCount}</span>
       </div>
 
       {/* Active Effects */}
@@ -194,6 +229,11 @@ export function BuffTracker({
                   definition={def}
                   onActivate={onActivateBuff}
                   onDelete={onDeleteDefinition}
+                  streakInfo={streakInfos?.get(def.id)}
+                  shieldCount={shieldCount}
+                  onUseShield={onUseShield}
+                  unclaimedMilestones={getUnclaimedMilestones?.(def.id) || []}
+                  onClaimMilestones={onClaimMilestones}
                 />
               ))}
             </div>
@@ -270,7 +310,7 @@ export function BuffTracker({
                 <option key={icon} value={icon}>{icon}</option>
               ))}
             </RPGSelect>
-            <RPGInput label="Duration (hours)" type="number" value={formDuration} onChange={(e) => setFormDuration(Number(e.target.value))} min={1} max={168} />
+            <RPGInput label="Duration (minutes)" type="number" value={formDurationMinutes} onChange={(e) => setFormDurationMinutes(Number(e.target.value))} min={1} max={10080} />
           </div>
           <div>
             <label className={styles.statEffectLabel} style={{ display: 'block', marginBottom: 8, fontFamily: 'var(--font-heading)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-secondary)' }}>
@@ -302,29 +342,88 @@ function BuffDefCard({
   definition,
   onActivate,
   onDelete,
+  streakInfo,
+  shieldCount = 0,
+  onUseShield,
+  unclaimedMilestones = [],
+  onClaimMilestones,
 }: {
   definition: BuffDefinition;
   onActivate: (id: number) => void;
   onDelete: (id: number) => void;
+  streakInfo?: StreakInfo;
+  shieldCount?: number;
+  onUseShield?: (buffDefinitionId: number) => Promise<boolean>;
+  unclaimedMilestones?: StreakMilestone[];
+  onClaimMilestones?: (buffDefinitionId: number) => Promise<StreakMilestone[]>;
 }) {
   const effects = parseStatEffects(definition.stat_effects);
   const effectStr = Object.entries(effects)
     .map(([k, v]) => `${v > 0 ? '+' : ''}${v} ${k}`)
     .join(', ');
 
+  const currentMilestone = streakInfo ? getLatestMilestone(streakInfo.currentStreak) : null;
+  const hasStreak = streakInfo && streakInfo.currentStreak > 0;
+  const isAtRisk = streakInfo?.isAtRisk && !streakInfo?.shieldActive;
+  const hasShieldActive = streakInfo?.shieldActive;
+
+  const handleUseShield = async () => {
+    if (onUseShield && streakInfo) {
+      await onUseShield(definition.id);
+    }
+  };
+
+  const handleClaimMilestones = async () => {
+    if (onClaimMilestones) {
+      await onClaimMilestones(definition.id);
+    }
+  };
+
   return (
     <div className={styles.buffCard}>
       <span className={styles.buffCardIcon}>{definition.icon}</span>
       <div className={styles.buffCardInfo}>
-        <div className={styles.buffCardName}>{definition.name}</div>
+        <div className={styles.buffCardName}>
+          {definition.name}
+          {currentMilestone && (
+            <span className={styles.milestoneBadge}>
+              <span className={styles.milestoneIcon}>{currentMilestone.icon}</span>
+              {currentMilestone.title}
+            </span>
+          )}
+        </div>
         {definition.description && <div className={styles.buffCardDesc}>{definition.description}</div>}
         <div className={styles.buffCardMeta}>
           <span className={`${styles.buffTypeBadge} ${definition.type === 'buff' ? styles.buffTypeBuff : styles.buffTypeDebuff}`}>
             {definition.type}
           </span>
-          {' '}{definition.duration_hours}h
+          {' '}{formatDuration(definition.duration_hours)}
           {effectStr && ` — ${effectStr}`}
         </div>
+        {/* Streak display for buffs */}
+        {definition.type === 'buff' && hasStreak && (
+          <div className={`${styles.streakBadge} ${isAtRisk ? styles.atRisk : ''} ${hasShieldActive ? styles.shieldActive : ''}`}>
+            <span className={styles.streakIcon}>{hasShieldActive ? '🛡️' : '🔥'}</span>
+            <span className={styles.streakCount}>{streakInfo!.currentStreak}</span>
+            <span className={styles.streakLabel}>
+              day streak
+              {isAtRisk && ' (at risk!)'}
+              {hasShieldActive && ' (protected)'}
+            </span>
+          </div>
+        )}
+        {/* Use shield button when at risk */}
+        {isAtRisk && shieldCount > 0 && onUseShield && (
+          <RPGButton size="small" variant="ghost" onClick={handleUseShield} style={{ marginTop: 6 }}>
+            🛡️ Use Shield
+          </RPGButton>
+        )}
+        {/* Claim milestones button */}
+        {unclaimedMilestones.length > 0 && onClaimMilestones && (
+          <RPGButton size="small" variant="primary" onClick={handleClaimMilestones} className={styles.claimMilestone}>
+            🏆 Claim {unclaimedMilestones.length} Milestone{unclaimedMilestones.length > 1 ? 's' : ''}!
+          </RPGButton>
+        )}
       </div>
       <div className={styles.buffCardActions}>
         <RPGButton size="small" variant="primary" onClick={() => onActivate(definition.id)}>

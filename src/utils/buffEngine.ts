@@ -60,3 +60,67 @@ export function aggregateStats(activeBuffs: ActiveBuff[]): Stats {
 
   return base;
 }
+
+/**
+ * Aggregate stats from all sources:
+ * - Base stats (10 each)
+ * - Active buff effects
+ * - Equipped item bonuses
+ * - Skill tree passive bonuses
+ * - Character class bonuses
+ * - Energy debuff penalties
+ */
+export function aggregateAllStats(
+  activeBuffs: ActiveBuff[],
+  equippedBonuses: Record<string, number> = {},
+  skillBonuses: Record<string, number> = {},
+  classBonuses: Record<string, number> = {},
+  energyPenalties: Record<string, number> = {}
+): Stats {
+  const stats: Stats = { stamina: 10, willpower: 10, health: 10, focus: 10, charisma: 10 };
+
+  // Add buff effects
+  for (const buff of activeBuffs) {
+    const effects = parseStatEffects(buff.stat_effects);
+    for (const [stat, value] of Object.entries(effects)) {
+      if (stat in stats) {
+        stats[stat as keyof Stats] += value;
+      }
+    }
+  }
+
+  // Add equipped item bonuses
+  for (const [stat, value] of Object.entries(equippedBonuses)) {
+    if (stat in stats) {
+      stats[stat as keyof Stats] += value;
+    }
+  }
+
+  // Add skill tree bonuses
+  for (const [stat, value] of Object.entries(skillBonuses)) {
+    if (stat in stats) {
+      stats[stat as keyof Stats] += value;
+    }
+  }
+
+  // Add class bonuses
+  for (const [stat, value] of Object.entries(classBonuses)) {
+    if (stat in stats) {
+      stats[stat as keyof Stats] += value;
+    }
+  }
+
+  // Apply energy penalties (debuffs from low energy)
+  for (const [stat, value] of Object.entries(energyPenalties)) {
+    if (stat in stats) {
+      stats[stat as keyof Stats] += value; // Value is negative
+    }
+  }
+
+  // Ensure stats don't go below 0
+  for (const stat of Object.keys(stats) as (keyof Stats)[]) {
+    stats[stat] = Math.max(0, stats[stat]);
+  }
+
+  return stats;
+}

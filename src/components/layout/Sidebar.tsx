@@ -5,7 +5,9 @@ const NAV_ITEMS: { id: TabId; label: string; icon: string }[] = [
   { id: 'character', label: 'Character', icon: '⚔' },
   { id: 'quests', label: 'Quest Log', icon: '📜' },
   { id: 'buffs', label: 'Buffs', icon: '✨' },
-  { id: 'planner', label: 'Planner', icon: '📅' },
+  { id: 'focus', label: 'Focus Timer', icon: '🎯' },
+  { id: 'skills', label: 'Skills', icon: '🌳' },
+  { id: 'inventory', label: 'Inventory', icon: '🎒' },
 ];
 
 interface SidebarProps {

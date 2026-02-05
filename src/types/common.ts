@@ -1,4 +1,4 @@
-export type TabId = 'character' | 'quests' | 'buffs' | 'planner';
+export type TabId = 'character' | 'quests' | 'buffs' | 'focus' | 'skills' | 'inventory';
 
 export interface Domain {
   id: number;

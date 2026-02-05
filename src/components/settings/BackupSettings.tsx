@@ -17,6 +17,8 @@ export function BackupSettings() {
   const [showRestoreList, setShowRestoreList] = useState(false);
   const [tokenInput, setTokenInput] = useState('');
   const [showTokenInput, setShowTokenInput] = useState(false);
+  const [showGistIdInput, setShowGistIdInput] = useState(false);
+  const [gistIdInput, setGistIdInput] = useState('');
 
   const checkAuth = useCallback(() => {
     setIsConnected(backup.isAuthenticated());
@@ -82,6 +84,24 @@ export function BackupSettings() {
       const files = await backup.listBackups();
       setBackups(files);
       setBackupStatus('');
+    }
+  };
+
+  const handleSetGistId = () => {
+    const id = gistIdInput.trim();
+    if (!id) {
+      setBackupStatus('Please enter a gist ID');
+      return;
+    }
+    // Extract ID from URL if full URL was pasted
+    const match = id.match(/([a-f0-9]{32})/i);
+    if (match) {
+      localStorage.setItem('github_gist_id', match[1]);
+      setBackupStatus('Gist ID set! Click "Restore from Backup" to see backups.');
+      setShowGistIdInput(false);
+      setGistIdInput('');
+    } else {
+      setBackupStatus('Invalid gist ID. Paste the gist URL or ID.');
     }
   };
 
@@ -176,9 +196,29 @@ export function BackupSettings() {
             <button onClick={handleShowBackups} className={styles.buttonSecondary}>
               {showRestoreList ? 'Hide Backups' : 'Restore from Backup'}
             </button>
+            <button onClick={() => setShowGistIdInput(!showGistIdInput)} className={styles.buttonSecondary}>
+              {showGistIdInput ? 'Cancel' : 'Link Existing Gist'}
+            </button>
             <button onClick={handleDisconnect} className={styles.buttonDanger}>
               Disconnect
             </button>
+            {showGistIdInput && (
+              <div className={styles.tokenInputContainer}>
+                <p className={styles.tokenHelp}>
+                  Paste your gist URL or ID to restore from an existing backup:
+                </p>
+                <input
+                  type="text"
+                  value={gistIdInput}
+                  onChange={(e) => setGistIdInput(e.target.value)}
+                  placeholder="https://gist.github.com/user/abc123... or just abc123..."
+                  className={styles.tokenInput}
+                />
+                <button onClick={handleSetGistId} className={styles.button}>
+                  Link Gist
+                </button>
+              </div>
+            )}
           </>
         )}
       </div>

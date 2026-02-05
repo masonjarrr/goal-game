@@ -7,9 +7,17 @@ import { XP_DAILY_BUFF, XP_STREAK_7DAY } from '../utils/constants';
 
 interface UseBuffsOptions {
   grantXP: (amount: number, reason: string, sourceType: string, sourceId?: number) => Promise<any>;
+  scheduleBuffExpiry?: (
+    buffLogId: number,
+    buffName: string,
+    buffType: 'buff' | 'debuff',
+    expiresAt: string
+  ) => Promise<void>;
+  cancelBuffExpiry?: (buffLogId: number) => Promise<void>;
+  onBuffActivated?: (type: 'buff' | 'debuff') => void;
 }
 
-export function useBuffs({ grantXP }: UseBuffsOptions) {
+export function useBuffs({ grantXP, scheduleBuffExpiry, cancelBuffExpiry, onBuffActivated }: UseBuffsOptions) {
   const [definitions, setDefinitions] = useState<BuffDefinition[]>([]);
   const [activeBuffs, setActiveBuffs] = useState<ActiveBuff[]>([]);
   const [stats, setStats] = useState<Stats>({ stamina: 10, willpower: 10, health: 10, focus: 10, charisma: 10 });
@@ -53,12 +61,22 @@ export function useBuffs({ grantXP }: UseBuffsOptions) {
 
   const activateBuff = useCallback(
     async (definitionId: number) => {
-      const logId = await buffRepo.activateBuff(definitionId);
+      const result = await buffRepo.activateBuff(definitionId);
       const def = definitions.find((d) => d.id === definitionId);
 
-      // Award XP for buff activation (habits)
-      if (def && def.type === 'buff') {
-        await grantXP(XP_DAILY_BUFF, `Activated buff: ${def.name}`, 'buff', logId);
+      // Check if buff has any stat effects (skip XP for test buffs with no stats)
+      const hasStatEffects = def && def.stat_effects && def.stat_effects !== '{}' && (() => {
+        try {
+          const effects = JSON.parse(def.stat_effects);
+          return Object.values(effects).some((v) => v !== 0);
+        } catch {
+          return false;
+        }
+      })();
+
+      // Award XP for buff activation (habits) - only if not stacking and has stat effects
+      if (def && def.type === 'buff' && !result.isStacked && hasStatEffects) {
+        await grantXP(XP_DAILY_BUFF, `Activated buff: ${def.name}`, 'buff', result.logId);
 
         // Check 7-day streak
         const streak = buffRepo.getStreakDays(definitionId);
@@ -67,17 +85,36 @@ export function useBuffs({ grantXP }: UseBuffsOptions) {
         }
       }
 
+      // Notify daily quest tracker (only if has stat effects)
+      if (def && onBuffActivated && hasStatEffects) {
+        onBuffActivated(def.type);
+      }
+
+      // Schedule/update notification for buff expiry
+      if (def && scheduleBuffExpiry) {
+        // Cancel existing notification first (if stacking)
+        if (result.isStacked && cancelBuffExpiry) {
+          await cancelBuffExpiry(result.logId);
+        }
+        // Schedule new notification with updated expiry time
+        await scheduleBuffExpiry(result.logId, def.name, def.type, result.newExpiresAt);
+      }
+
       refresh();
     },
-    [refresh, definitions, grantXP]
+    [refresh, definitions, grantXP, scheduleBuffExpiry, cancelBuffExpiry, onBuffActivated]
   );
 
   const deactivateBuff = useCallback(
     async (logId: number) => {
+      // Cancel notification for buff expiry
+      if (cancelBuffExpiry) {
+        await cancelBuffExpiry(logId);
+      }
       await buffRepo.deactivateBuff(logId);
       refresh();
     },
-    [refresh]
+    [refresh, cancelBuffExpiry]
   );
 
   return {

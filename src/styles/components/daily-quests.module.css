@@ -1,0 +1,220 @@
+.dailyQuestsPanel {
+  margin-bottom: 20px;
+}
+
+.questsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.questsTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.questsIcon {
+  font-size: 1.2rem;
+}
+
+.questsProgress {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  font-family: var(--font-body);
+}
+
+.questsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.questItem {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  transition: all var(--transition-fast);
+}
+
+.questItem.completed {
+  border-color: var(--stat-green);
+  background: rgba(46, 204, 113, 0.08);
+}
+
+.questItemHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.questCheckbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--border-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.questItem.completed .questCheckbox {
+  background: var(--stat-green);
+  border-color: var(--stat-green);
+  color: #fff;
+  font-size: 0.7rem;
+}
+
+.questInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.questTitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.questName {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.questItem.completed .questName {
+  color: var(--stat-green);
+}
+
+.questXp {
+  font-size: 0.75rem;
+  color: var(--text-gold);
+  font-family: var(--font-heading);
+  padding: 2px 8px;
+  background: rgba(200, 168, 78, 0.15);
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.questItem.completed .questXp {
+  background: rgba(46, 204, 113, 0.15);
+  color: var(--stat-green);
+}
+
+.questDescription {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.progressContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progressBar {
+  flex: 1;
+  height: 6px;
+  background: var(--bg-lighter);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold-dark), var(--text-gold));
+  border-radius: 3px;
+  transition: width var(--transition-normal);
+}
+
+.questItem.completed .progressFill {
+  background: var(--stat-green);
+}
+
+.progressText {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  font-family: var(--font-heading);
+  min-width: 45px;
+  text-align: right;
+}
+
+/* Bonus section */
+.bonusSection {
+  margin-top: 16px;
+  padding: 14px;
+  background: linear-gradient(135deg, rgba(200, 168, 78, 0.12), rgba(200, 168, 78, 0.05));
+  border: 1px solid var(--border-gold);
+  border-radius: var(--border-radius);
+  text-align: center;
+}
+
+.bonusSection.available {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.bonusSection.claimed {
+  background: rgba(46, 204, 113, 0.1);
+  border-color: var(--stat-green);
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 8px var(--gold-glow); }
+  50% { box-shadow: 0 0 16px var(--gold-glow); }
+}
+
+.bonusTitle {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  color: var(--text-gold);
+  margin-bottom: 6px;
+}
+
+.bonusSection.claimed .bonusTitle {
+  color: var(--stat-green);
+}
+
+.bonusDescription {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+}
+
+.bonusXp {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  color: var(--text-gold);
+}
+
+.bonusSection.claimed .bonusXp {
+  color: var(--stat-green);
+}
+
+.claimButton {
+  margin-top: 10px;
+}
+
+/* Loading state */
+.loading {
+  text-align: center;
+  color: var(--text-dim);
+  padding: 20px;
+  font-style: italic;
+}
+
+/* Empty state */
+.emptyState {
+  text-align: center;
+  color: var(--text-dim);
+  padding: 20px;
+  font-style: italic;
+}

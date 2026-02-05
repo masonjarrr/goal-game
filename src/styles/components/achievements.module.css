@@ -1,0 +1,342 @@
+.achievementPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.statsBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, rgba(200, 168, 78, 0.1), rgba(200, 168, 78, 0.05));
+  border: 1px solid var(--border-gold);
+  border-radius: var(--border-radius);
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.statValue {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  color: var(--text-gold);
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.progressBarContainer {
+  flex: 1;
+  max-width: 200px;
+  margin: 0 20px;
+}
+
+.progressLabel {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+.progressTrack {
+  height: 8px;
+  background: var(--bg-dark);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--text-gold), #ffd700);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.categoryTabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.categoryTab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.categoryTab:hover {
+  border-color: var(--border-gold);
+  color: var(--text-primary);
+}
+
+.categoryTab.active {
+  background: linear-gradient(135deg, rgba(200, 168, 78, 0.15), rgba(200, 168, 78, 0.08));
+  border-color: var(--border-gold);
+  color: var(--text-gold);
+}
+
+.categoryIcon {
+  font-size: 1rem;
+}
+
+.categoryCount {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  background: rgba(200, 168, 78, 0.2);
+  border-radius: 10px;
+  color: var(--text-gold);
+}
+
+.achievementGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.achievementCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  transition: all var(--transition-fast);
+}
+
+.achievementCard:hover {
+  border-color: var(--border-gold);
+}
+
+.achievementCard.unlocked {
+  background: linear-gradient(135deg, rgba(46, 204, 113, 0.08), rgba(46, 204, 113, 0.03));
+  border-color: rgba(46, 204, 113, 0.3);
+}
+
+.achievementCard.locked {
+  opacity: 0.7;
+}
+
+.achievementCard.hidden {
+  opacity: 0.4;
+}
+
+.achievementIcon {
+  font-size: 2rem;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(200, 168, 78, 0.1);
+  border: 1px solid var(--border-gold);
+  border-radius: 8px;
+}
+
+.achievementCard.unlocked .achievementIcon {
+  background: rgba(46, 204, 113, 0.15);
+  border-color: rgba(46, 204, 113, 0.4);
+  animation: achievementGlow 2s ease-in-out infinite;
+}
+
+.achievementCard.locked .achievementIcon {
+  filter: grayscale(80%);
+  opacity: 0.6;
+}
+
+.achievementInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.achievementName {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.achievementCard.unlocked .achievementName {
+  color: var(--buff-color);
+}
+
+.achievementDesc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.achievementMeta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.75rem;
+}
+
+.achievementXp {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-gold);
+  font-family: var(--font-heading);
+}
+
+.achievementProgress {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.achievementProgressTrack {
+  flex: 1;
+  height: 6px;
+  background: var(--bg-dark);
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.achievementProgressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--text-gold), #ffd700);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.achievementProgressText {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  min-width: 50px;
+  text-align: right;
+}
+
+.achievementUnlockDate {
+  font-size: 0.7rem;
+  color: var(--buff-color);
+}
+
+.emptyState {
+  text-align: center;
+  color: var(--text-dim);
+  font-style: italic;
+  padding: 40px 20px;
+}
+
+/* Badge for use in other components */
+.achievementBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: linear-gradient(135deg, rgba(200, 168, 78, 0.15), rgba(200, 168, 78, 0.08));
+  border: 1px solid var(--border-gold);
+  border-radius: 12px;
+  font-size: 0.75rem;
+  color: var(--text-gold);
+  font-family: var(--font-heading);
+}
+
+.achievementBadgeIcon {
+  font-size: 0.85rem;
+}
+
+/* Unlock Modal */
+.unlockModal {
+  text-align: center;
+}
+
+.unlockIcon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+  animation: achievementBounce 0.6s ease-out;
+}
+
+.unlockTitle {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  color: var(--text-gold);
+  margin-bottom: 8px;
+}
+
+.unlockDesc {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+.unlockReward {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, rgba(46, 204, 113, 0.15), rgba(46, 204, 113, 0.08));
+  border: 1px solid rgba(46, 204, 113, 0.3);
+  border-radius: var(--border-radius);
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  color: var(--buff-color);
+}
+
+@keyframes achievementGlow {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(46, 204, 113, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(46, 204, 113, 0.5);
+  }
+}
+
+@keyframes achievementBounce {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .statsBar {
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .progressBarContainer {
+    order: 3;
+    flex-basis: 100%;
+    max-width: none;
+    margin: 8px 0 0;
+  }
+
+  .achievementGrid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,19 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Scheduled notifications - only allow read/write for documents matching the device
+    match /scheduled_notifications/{notificationId} {
+      // Allow create if the deviceId in the document matches the prefix of the notificationId
+      allow create: if notificationId.split('_')[0] == request.resource.data.deviceId;
+
+      // Allow read/update/delete if the deviceId matches
+      allow read, update, delete: if resource.data.deviceId == notificationId.split('_')[0];
+    }
+
+    // FCM tokens - only allow device to manage its own token
+    match /fcm_tokens/{deviceId} {
+      allow read, write: if request.resource.data.deviceId == deviceId;
+    }
+  }
+}

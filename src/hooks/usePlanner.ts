@@ -2,12 +2,22 @@ import { useState, useCallback, useEffect } from 'react';
 import { PlannerEvent, PlannerView } from '../types/planner';
 import * as plannerRepo from '../db/repositories/plannerRepo';
 import { today, getWeekDates, addDays } from '../utils/dates';
+import { ReminderOption } from '../types/notification';
 
 interface UsePlannerOptions {
   grantXP: (amount: number, reason: string, sourceType: string, sourceId?: number) => Promise<any>;
+  scheduleEventReminder?: (
+    eventId: number,
+    eventTitle: string,
+    eventDate: string,
+    eventTime: string,
+    reminderMinutes: number
+  ) => Promise<void>;
+  cancelEventReminder?: (eventId: number) => Promise<void>;
+  onEventComplete?: () => void;
 }
 
-export function usePlanner({ grantXP }: UsePlannerOptions) {
+export function usePlanner({ grantXP, scheduleEventReminder, cancelEventReminder, onEventComplete }: UsePlannerOptions) {
   const [view, setView] = useState<PlannerView>('day');
   const [currentDate, setCurrentDate] = useState(today());
   const [events, setEvents] = useState<PlannerEvent[]>([]);
@@ -39,12 +49,28 @@ export function usePlanner({ grantXP }: UsePlannerOptions) {
       startTime?: string | null,
       endTime?: string | null,
       questId?: number | null,
-      stepId?: number | null
+      stepId?: number | null,
+      reminderMinutes?: ReminderOption
     ) => {
-      await plannerRepo.createEvent(title, date, description, startTime, endTime, questId, stepId);
+      const eventId = await plannerRepo.createEvent(
+        title,
+        date,
+        description,
+        startTime,
+        endTime,
+        questId,
+        stepId,
+        reminderMinutes
+      );
+
+      // Schedule notification if reminder is set and event has a start time
+      if (reminderMinutes !== null && reminderMinutes !== undefined && startTime && scheduleEventReminder) {
+        await scheduleEventReminder(eventId, title, date, startTime, reminderMinutes);
+      }
+
       refresh();
     },
-    [refresh]
+    [refresh, scheduleEventReminder]
   );
 
   const completeEvent = useCallback(
@@ -54,9 +80,17 @@ export function usePlanner({ grantXP }: UsePlannerOptions) {
       if (ev && (ev.quest_id || ev.step_id)) {
         await grantXP(10, `Completed linked event: ${ev.title}`, 'event', eventId);
       }
+      // Notify daily quest tracker
+      if (onEventComplete) {
+        onEventComplete();
+      }
+      // Cancel any pending reminder for this event
+      if (cancelEventReminder) {
+        await cancelEventReminder(eventId);
+      }
       refresh();
     },
-    [refresh, events, grantXP]
+    [refresh, events, grantXP, cancelEventReminder, onEventComplete]
   );
 
   const uncompleteEvent = useCallback(
@@ -69,10 +103,14 @@ export function usePlanner({ grantXP }: UsePlannerOptions) {
 
   const deleteEvent = useCallback(
     async (eventId: number) => {
+      // Cancel any pending reminder for this event
+      if (cancelEventReminder) {
+        await cancelEventReminder(eventId);
+      }
       await plannerRepo.deleteEvent(eventId);
       refresh();
     },
-    [refresh]
+    [refresh, cancelEventReminder]
   );
 
   const navigateDay = useCallback(

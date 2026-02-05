@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { PlannerEvent, PlannerView as PlannerViewType } from '../../types/planner';
+import { ReminderOption } from '../../types/notification';
 import { formatDate, formatTime, getWeekDates, getMonthDates, getMonthName, today } from '../../utils/dates';
 import { RPGPanel } from '../ui/RPGPanel';
 import { RPGButton } from '../ui/RPGButton';
 import { RPGCheckbox } from '../ui/RPGCheckbox';
 import { RPGModal } from '../ui/RPGModal';
 import { RPGInput, RPGTextarea } from '../ui/RPGInput';
+import { ReminderPicker } from '../notifications/ReminderPicker';
 import styles from '../../styles/components/planner.module.css';
 
 interface PlannerViewProps {
@@ -22,8 +24,11 @@ interface PlannerViewProps {
     startTime?: string | null,
     endTime?: string | null,
     questId?: number | null,
-    stepId?: number | null
+    stepId?: number | null,
+    reminderMinutes?: ReminderOption
   ) => void;
+  notificationsEnabled?: boolean;
+  defaultReminderMinutes?: number;
   onComplete: (id: number) => void;
   onUncomplete: (id: number) => void;
   onDelete: (id: number) => void;
@@ -43,6 +48,8 @@ export function PlannerViewComponent({
   onComplete,
   onUncomplete,
   onDelete,
+  notificationsEnabled = false,
+  defaultReminderMinutes = 15,
 }: PlannerViewProps) {
   const [showForm, setShowForm] = useState(false);
   const [formDate, setFormDate] = useState(currentDate);
@@ -50,6 +57,9 @@ export function PlannerViewComponent({
   const [formDesc, setFormDesc] = useState('');
   const [formStartTime, setFormStartTime] = useState('');
   const [formEndTime, setFormEndTime] = useState('');
+  const [formReminder, setFormReminder] = useState<ReminderOption>(
+    notificationsEnabled ? defaultReminderMinutes as ReminderOption : null
+  );
 
   const handleCreate = () => {
     if (!formTitle.trim()) return;
@@ -58,12 +68,16 @@ export function PlannerViewComponent({
       formDate,
       formDesc.trim(),
       formStartTime || null,
-      formEndTime || null
+      formEndTime || null,
+      null,
+      null,
+      formStartTime ? formReminder : null // Only include reminder if event has a start time
     );
     setFormTitle('');
     setFormDesc('');
     setFormStartTime('');
     setFormEndTime('');
+    setFormReminder(notificationsEnabled ? defaultReminderMinutes as ReminderOption : null);
     setShowForm(false);
   };
 
@@ -187,6 +201,12 @@ export function PlannerViewComponent({
             onChange={(e) => setFormDesc(e.target.value)}
             placeholder="Event details..."
           />
+          {formStartTime && notificationsEnabled && (
+            <ReminderPicker
+              value={formReminder}
+              onChange={setFormReminder}
+            />
+          )}
         </div>
       </RPGModal>
     </div>

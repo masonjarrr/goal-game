@@ -31,6 +31,7 @@ export function CharacterScreen({ character, stats, activeBuffs, xpLog, onNameCh
   const xpProgress = getXPProgress(character.total_xp);
   const [editingName, setEditingName] = useState(false);
   const [nameInput, setNameInput] = useState(character.name);
+  const [showXpHistory, setShowXpHistory] = useState(false);
 
   const handleSaveName = () => {
     if (nameInput.trim()) {
@@ -146,23 +147,34 @@ export function CharacterScreen({ character, stats, activeBuffs, xpLog, onNameCh
           )}
         </RPGPanel>
 
-        <RPGPanel header="XP History">
-          {xpLog.length === 0 ? (
-            <div className={styles.emptyState}>No XP earned yet. Complete steps to earn XP!</div>
-          ) : (
-            <div className={styles.xpLogList}>
-              {xpLog.slice(0, 20).map((entry) => (
-                <div key={entry.id} className={styles.xpLogEntry}>
-                  <span className={styles.xpLogReason}>{entry.reason}</span>
-                  <span className={`${styles.xpLogAmount} ${entry.amount < 0 ? styles.negative : ''}`}>
-                    {entry.amount > 0 ? '+' : ''}
-                    {entry.amount} XP
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </RPGPanel>
+        <RPGButton
+          size="small"
+          variant="ghost"
+          onClick={() => setShowXpHistory(!showXpHistory)}
+          style={{ width: '100%', marginTop: 8 }}
+        >
+          {showXpHistory ? 'Hide XP History' : 'Show XP History'}
+        </RPGButton>
+
+        {showXpHistory && (
+          <RPGPanel header="XP History" style={{ marginTop: 8 }}>
+            {xpLog.length === 0 ? (
+              <div className={styles.emptyState}>No XP earned yet. Complete steps to earn XP!</div>
+            ) : (
+              <div className={styles.xpLogList}>
+                {xpLog.slice(0, 20).map((entry) => (
+                  <div key={entry.id} className={styles.xpLogEntry}>
+                    <span className={styles.xpLogReason}>{entry.reason}</span>
+                    <span className={`${styles.xpLogAmount} ${entry.amount < 0 ? styles.negative : ''}`}>
+                      {entry.amount > 0 ? '+' : ''}
+                      {entry.amount} XP
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </RPGPanel>
+        )}
       </div>
     </div>
   );

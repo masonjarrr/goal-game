@@ -39,6 +39,7 @@ import { RoutinePanel } from './components/routines/RoutinePanel';
 import { ComboDisplay } from './components/combos/ComboDisplay';
 import { WeeklyReviewPanel } from './components/weeklyReview/WeeklyReviewPanel';
 import { exportDatabase, importDatabase } from './db/database';
+import { applyMissedStepDebuffs } from './db/repositories/buffRepo';
 import { RPGButton } from './components/ui/RPGButton';
 import { GuideButton } from './components/layout/GuideModal';
 import styles from './styles/components/layout.module.css';
@@ -115,6 +116,12 @@ function AppContent({ activeTab, setActiveTab }: { activeTab: TabId; setActiveTa
     onGoalComplete: () => {
       weeklyBoss.dealDamage('goal_completed', 'Completed a goal');
       achievements.incrementProgress('goals_completed', 1);
+    },
+    onStepMissed: async (missedToday: number) => {
+      // Apply debuffs based on missed steps
+      await applyMissedStepDebuffs(missedToday);
+      // Refresh buffs to show the new debuffs
+      buffs.refresh();
     },
   });
   const notifications = useNotifications();
@@ -420,6 +427,8 @@ function AppContent({ activeTab, setActiveTab }: { activeTab: TabId; setActiveTa
             onCreateStep={quests.createStep}
             onCompleteStep={quests.completeStep}
             onUncompleteStep={quests.uncompleteStep}
+            onMissStep={quests.missStep}
+            onUnmissStep={quests.unmissStep}
             onDeleteStep={quests.deleteStep}
             onDeleteQuest={quests.deleteQuest}
             onDeleteGoal={quests.deleteGoal}

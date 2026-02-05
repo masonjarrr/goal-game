@@ -4,6 +4,7 @@ import { runFebruary2026BillingMigration } from '../db/migrations/february2026Bi
 import { runNotificationsMigration } from '../db/migrations/notificationsMigration';
 import { seedBodyFatGoal } from '../db/migrations/bodyFatGoalSeed';
 import { fixBodyFatStepTitles } from '../db/migrations/bodyFatStepsFix';
+import { runMissStepMigration } from '../db/migrations/missStepMigration';
 import { runDailyQuestsMigration } from '../db/migrations/dailyQuestsMigration';
 import { runStreakMigration } from '../db/migrations/streakMigration';
 import { runWeeklyBossMigration } from '../db/migrations/weeklyBossMigration';
@@ -31,6 +32,7 @@ export function useDatabase() {
         await runNotificationsMigration();
         await seedBodyFatGoal();
         await fixBodyFatStepTitles();
+        await runMissStepMigration();
         await runDailyQuestsMigration();
         await runStreakMigration();
         await runWeeklyBossMigration();

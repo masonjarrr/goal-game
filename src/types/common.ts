@@ -9,7 +9,7 @@ export interface Domain {
 
 export type Priority = 'normal' | 'important' | 'legendary';
 export type QuestStatus = 'active' | 'completed' | 'failed' | 'abandoned';
-export type StepStatus = 'pending' | 'completed' | 'skipped';
+export type StepStatus = 'pending' | 'completed' | 'skipped' | 'missed';
 export type BuffType = 'buff' | 'debuff';
 export type StatName = 'stamina' | 'willpower' | 'health' | 'focus' | 'charisma';
 

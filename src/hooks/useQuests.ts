@@ -4,14 +4,17 @@ import { Domain } from '../types/common';
 import * as questRepo from '../db/repositories/questRepo';
 import { XP_PER_STEP, XP_QUEST_COMPLETE, XP_GOAL_COMPLETE } from '../utils/constants';
 
+export const XP_MISS_PENALTY = 10;
+
 interface UseQuestsOptions {
   grantXP: (amount: number, reason: string, sourceType: string, sourceId?: number) => Promise<any>;
   onStepComplete?: () => void;
   onQuestComplete?: () => void;
   onGoalComplete?: () => void;
+  onStepMissed?: (missedToday: number) => void;
 }
 
-export function useQuests({ grantXP, onStepComplete, onQuestComplete, onGoalComplete }: UseQuestsOptions) {
+export function useQuests({ grantXP, onStepComplete, onQuestComplete, onGoalComplete, onStepMissed }: UseQuestsOptions) {
   const [goals, setGoals] = useState<GoalWithQuests[]>([]);
   const [domains] = useState<Domain[]>(() => questRepo.getDomains());
   const [filterDomain, setFilterDomain] = useState<number | undefined>(undefined);
@@ -127,6 +130,34 @@ export function useQuests({ grantXP, onStepComplete, onQuestComplete, onGoalComp
     [refresh]
   );
 
+  const missStep = useCallback(
+    async (stepId: number) => {
+      await questRepo.missStep(stepId, XP_MISS_PENALTY);
+
+      // Deduct XP as penalty
+      await grantXP(-XP_MISS_PENALTY, 'Missed step', 'step_missed', stepId);
+
+      // Get total missed today for debuff logic
+      const missedToday = questRepo.getMissedStepsToday();
+
+      // Notify for debuff application
+      if (onStepMissed) {
+        onStepMissed(missedToday);
+      }
+
+      refresh();
+    },
+    [refresh, grantXP, onStepMissed]
+  );
+
+  const unmissStep = useCallback(
+    async (stepId: number) => {
+      await questRepo.unmissStep(stepId);
+      refresh();
+    },
+    [refresh]
+  );
+
   return {
     goals,
     domains,
@@ -140,6 +171,8 @@ export function useQuests({ grantXP, onStepComplete, onQuestComplete, onGoalComp
     createStep,
     completeStep,
     uncompleteStep,
+    missStep,
+    unmissStep,
     deleteStep,
     deleteQuest,
     deleteGoal,

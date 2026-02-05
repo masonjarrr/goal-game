@@ -89,7 +89,7 @@ export async function updateQuestStatus(id: number, status: string): Promise<voi
 export function getSteps(questId: number): Step[] {
   const db = getDB();
   const result = db.exec(
-    'SELECT id, quest_id, title, priority, status, sort_order, completed_at FROM steps WHERE quest_id = ? ORDER BY sort_order, id',
+    'SELECT id, quest_id, title, priority, status, sort_order, completed_at, missed_at FROM steps WHERE quest_id = ? ORDER BY sort_order, id',
     [questId]
   );
   if (!result.length) return [];
@@ -101,6 +101,7 @@ export function getSteps(questId: number): Step[] {
     status: row[4] as Step['status'],
     sort_order: row[5] as number,
     completed_at: row[6] as string | null,
+    missed_at: row[7] as string | null,
   }));
 }
 
@@ -143,6 +144,38 @@ export async function bulkUpdateStepTitles(updates: { id: number; title: string 
   for (const update of updates) {
     db.run('UPDATE steps SET title = ? WHERE id = ?', [update.title, update.id]);
   }
+  await persist();
+}
+
+export async function missStep(id: number, xpPenalty: number = 10): Promise<void> {
+  const db = getDB();
+  const today = new Date().toISOString().split('T')[0];
+
+  db.run("UPDATE steps SET status = 'missed', missed_at = datetime('now') WHERE id = ?", [id]);
+
+  // Log the miss for daily tracking
+  db.run(
+    'INSERT INTO missed_steps_log (step_id, missed_date, xp_penalty) VALUES (?, ?, ?)',
+    [id, today, xpPenalty]
+  );
+
+  await persist();
+}
+
+export function getMissedStepsToday(): number {
+  const db = getDB();
+  const today = new Date().toISOString().split('T')[0];
+  const result = db.exec(
+    'SELECT COUNT(*) FROM missed_steps_log WHERE missed_date = ?',
+    [today]
+  );
+  if (!result.length) return 0;
+  return result[0].values[0][0] as number;
+}
+
+export async function unmissStep(id: number): Promise<void> {
+  const db = getDB();
+  db.run("UPDATE steps SET status = 'pending', missed_at = NULL WHERE id = ?", [id]);
   await persist();
 }
 

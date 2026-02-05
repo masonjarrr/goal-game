@@ -203,3 +203,49 @@
   font-style: italic;
   padding: 32px;
 }
+
+/* Missed Steps */
+.stepMissed {
+  background: rgba(231, 76, 60, 0.1);
+  border-left: 3px solid var(--debuff-color);
+}
+
+.missedLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.missedIcon {
+  color: var(--debuff-color);
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.missedText {
+  text-decoration: line-through;
+  color: var(--text-dim);
+  font-size: 0.95rem;
+}
+
+.missBtn {
+  color: var(--text-dim);
+}
+
+.missBtn:hover {
+  color: var(--debuff-color);
+}
+
+.stepActions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.stepItem:hover .stepActions {
+  opacity: 1;
+}

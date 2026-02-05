@@ -21,6 +21,8 @@ interface QuestLogProps {
   onCreateStep: (questId: number, title: string, priority?: string) => void;
   onCompleteStep: (stepId: number, questId: number, priority: string) => void;
   onUncompleteStep: (stepId: number) => void;
+  onMissStep: (stepId: number) => void;
+  onUnmissStep: (stepId: number) => void;
   onDeleteStep: (stepId: number) => void;
   onDeleteQuest: (questId: number) => void;
   onDeleteGoal: (goalId: number) => void;
@@ -38,6 +40,8 @@ export function QuestLog({
   onCreateStep,
   onCompleteStep,
   onUncompleteStep,
+  onMissStep,
+  onUnmissStep,
   onDeleteStep,
   onDeleteQuest,
   onDeleteGoal,
@@ -129,6 +133,8 @@ export function QuestLog({
                       onCreateStep={onCreateStep}
                       onCompleteStep={onCompleteStep}
                       onUncompleteStep={onUncompleteStep}
+                      onMissStep={onMissStep}
+                      onUnmissStep={onUnmissStep}
                       onDeleteStep={onDeleteStep}
                       onDeleteQuest={onDeleteQuest}
                     />

@@ -29,6 +29,7 @@ export interface Step {
   status: StepStatus;
   sort_order: number;
   completed_at: string | null;
+  missed_at: string | null;
 }
 
 export interface QuestWithSteps extends Quest {

@@ -10,6 +10,8 @@ interface QuestCardProps {
   onCreateStep: (questId: number, title: string, priority?: string) => void;
   onCompleteStep: (stepId: number, questId: number, priority: string) => void;
   onUncompleteStep: (stepId: number) => void;
+  onMissStep: (stepId: number) => void;
+  onUnmissStep: (stepId: number) => void;
   onDeleteStep: (stepId: number) => void;
   onDeleteQuest: (questId: number) => void;
 }
@@ -19,6 +21,8 @@ export function QuestCard({
   onCreateStep,
   onCompleteStep,
   onUncompleteStep,
+  onMissStep,
+  onUnmissStep,
   onDeleteStep,
   onDeleteQuest,
 }: QuestCardProps) {
@@ -61,30 +65,54 @@ export function QuestCard({
       {expanded && (
         <div className={styles.stepsSection}>
           <div className={styles.stepsList}>
-            {quest.steps.map((step) => (
-              <div key={step.id} className={styles.stepItem}>
-                <div
-                  className={styles.stepPriorityDot}
-                  style={{ background: priorityColor(step.priority) }}
-                />
-                <RPGCheckbox
-                  checked={step.status === 'completed'}
-                  onChange={(checked) => {
-                    if (checked) {
-                      onCompleteStep(step.id, quest.id, step.priority);
-                    } else {
-                      onUncompleteStep(step.id);
-                    }
-                  }}
-                  label={step.title}
-                />
-                <div className={styles.stepActions}>
-                  <RPGButton size="small" variant="danger" onClick={() => onDeleteStep(step.id)}>
-                    ×
-                  </RPGButton>
+            {quest.steps.map((step) => {
+              const isMissed = step.status === 'missed';
+              const isCompleted = step.status === 'completed';
+              const isPending = step.status === 'pending';
+
+              return (
+                <div key={step.id} className={`${styles.stepItem} ${isMissed ? styles.stepMissed : ''}`}>
+                  <div
+                    className={styles.stepPriorityDot}
+                    style={{ background: priorityColor(step.priority) }}
+                  />
+                  {isMissed ? (
+                    <span className={styles.missedLabel} onClick={() => onUnmissStep(step.id)}>
+                      <span className={styles.missedIcon}>✗</span>
+                      <span className={styles.missedText}>{step.title}</span>
+                    </span>
+                  ) : (
+                    <RPGCheckbox
+                      checked={isCompleted}
+                      onChange={(checked) => {
+                        if (checked) {
+                          onCompleteStep(step.id, quest.id, step.priority);
+                        } else {
+                          onUncompleteStep(step.id);
+                        }
+                      }}
+                      label={step.title}
+                    />
+                  )}
+                  <div className={styles.stepActions}>
+                    {isPending && (
+                      <RPGButton
+                        size="small"
+                        variant="ghost"
+                        onClick={() => onMissStep(step.id)}
+                        title="Mark as missed"
+                        className={styles.missBtn}
+                      >
+                        ✗
+                      </RPGButton>
+                    )}
+                    <RPGButton size="small" variant="danger" onClick={() => onDeleteStep(step.id)}>
+                      ×
+                    </RPGButton>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {!isCompleted && (

@@ -155,3 +155,57 @@ export function getStreakDays(definitionId: number): number {
   }
   return streak;
 }
+
+// System debuff definitions
+export const SYSTEM_DEBUFFS = {
+  GUILT: {
+    name: 'Guilt',
+    description: 'You missed a step. Focus and willpower reduced.',
+    icon: '😔',
+    duration_hours: 4,
+    stat_effects: '{"willpower": -1, "focus": -1}',
+  },
+  OFF_TRACK: {
+    name: 'Off Track',
+    description: 'You missed 3+ steps today. All stats reduced.',
+    icon: '😫',
+    duration_hours: 24,
+    stat_effects: '{"stamina": -2, "willpower": -2, "health": -2, "focus": -2, "charisma": -2}',
+  },
+};
+
+export async function getOrCreateSystemDebuff(key: keyof typeof SYSTEM_DEBUFFS): Promise<number> {
+  const db = getDB();
+  const debuff = SYSTEM_DEBUFFS[key];
+
+  // Check if it exists
+  const existing = db.exec(
+    'SELECT id FROM buff_definitions WHERE name = ? AND type = ?',
+    [debuff.name, 'debuff']
+  );
+
+  if (existing.length && existing[0].values.length) {
+    return existing[0].values[0][0] as number;
+  }
+
+  // Create it
+  db.run(
+    'INSERT INTO buff_definitions (name, description, type, icon, duration_hours, stat_effects) VALUES (?, ?, ?, ?, ?, ?)',
+    [debuff.name, debuff.description, 'debuff', debuff.icon, debuff.duration_hours, debuff.stat_effects]
+  );
+  const result = db.exec('SELECT last_insert_rowid()');
+  await persist();
+  return result[0].values[0][0] as number;
+}
+
+export async function applyMissedStepDebuffs(missedToday: number): Promise<void> {
+  // Always apply Guilt debuff (or extend it)
+  const guiltId = await getOrCreateSystemDebuff('GUILT');
+  await activateBuff(guiltId);
+
+  // If 3+ misses today, apply Off Track debuff
+  if (missedToday >= 3) {
+    const offTrackId = await getOrCreateSystemDebuff('OFF_TRACK');
+    await activateBuff(offTrackId);
+  }
+}

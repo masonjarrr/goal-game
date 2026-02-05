@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { BuffDefinition, ActiveBuff } from '../../types/buff';
 import { StreakInfo, StreakMilestone, getLatestMilestone } from '../../types/streak';
 import { STAT_NAMES } from '../../types/common';
@@ -113,11 +113,13 @@ export function BuffTracker({
   onClaimMilestones,
 }: BuffTrackerProps) {
   const [showForm, setShowForm] = useState(false);
+  const [expandedBuffs, setExpandedBuffs] = useState(true);
+  const [expandedDebuffs, setExpandedDebuffs] = useState(true);
   const [formName, setFormName] = useState('');
   const [formDesc, setFormDesc] = useState('');
   const [formType, setFormType] = useState('buff');
   const [formIcon, setFormIcon] = useState('💪');
-  const [formDurationMinutes, setFormDurationMinutes] = useState(1440); // Default 24 hours in minutes
+  const [formDurationMinutes, setFormDurationMinutes] = useState(1440);
   const [formStats, setFormStats] = useState<Record<string, number>>({});
 
   const applyPreset = (presetIndex: string) => {
@@ -128,7 +130,7 @@ export function BuffTracker({
     setFormDesc(preset.description);
     setFormType(preset.type);
     setFormIcon(preset.icon);
-    setFormDurationMinutes(preset.duration * 60); // Convert hours to minutes
+    setFormDurationMinutes(preset.duration * 60);
     setFormStats({ ...preset.stats });
   };
 
@@ -137,14 +139,14 @@ export function BuffTracker({
     setFormDesc('');
     setFormType('buff');
     setFormIcon('💪');
-    setFormDurationMinutes(1440); // 24 hours in minutes
+    setFormDurationMinutes(1440);
     setFormStats({});
   };
 
   const handleCreate = () => {
     if (!formName.trim()) return;
     const filteredStats = Object.fromEntries(Object.entries(formStats).filter(([, v]) => v !== 0));
-    const durationHours = formDurationMinutes / 60; // Convert minutes to hours (supports decimals)
+    const durationHours = formDurationMinutes / 60;
     onCreateDefinition(formName.trim(), formDesc.trim(), formType, formIcon, durationHours, JSON.stringify(filteredStats));
     resetForm();
     setShowForm(false);
@@ -164,19 +166,107 @@ export function BuffTracker({
   const buffs = definitions.filter((d) => d.type === 'buff');
   const debuffs = definitions.filter((d) => d.type === 'debuff');
 
+  // Quick actions: buffs with streaks or recently used
+  const quickActionBuffs = useMemo(() => {
+    return buffs
+      .filter((b) => {
+        const streak = streakInfos?.get(b.id);
+        return streak && streak.currentStreak > 0;
+      })
+      .slice(0, 6);
+  }, [buffs, streakInfos]);
+
+  const quickActionDebuffs = useMemo(() => {
+    return debuffs.slice(0, 4);
+  }, [debuffs]);
+
   const buffPresets = PRESETS.map((p, i) => ({ ...p, index: i })).filter((p) => p.type === 'buff');
   const debuffPresets = PRESETS.map((p, i) => ({ ...p, index: i })).filter((p) => p.type === 'debuff');
 
+  const activeBuffsList = activeBuffs.filter((b) => b.type === 'buff');
+  const activeDebuffsList = activeBuffs.filter((b) => b.type === 'debuff');
+
   return (
     <div className={styles.buffTracker}>
-      <div className={styles.buffToolbar}>
-        <div />
-        <RPGButton variant="primary" onClick={() => { resetForm(); setShowForm(true); }}>
-          + New Buff/Debuff
-        </RPGButton>
-      </div>
+      {/* Active Effects - Always at top */}
+      {activeBuffs.length > 0 && (
+        <div className={styles.activeEffectsBar}>
+          <div className={styles.activeEffectsHeader}>
+            <span className={styles.activeEffectsTitle}>Active Effects</span>
+            <span className={styles.activeEffectsCount}>
+              {activeBuffsList.length > 0 && <span className={styles.buffCount}>+{activeBuffsList.length}</span>}
+              {activeDebuffsList.length > 0 && <span className={styles.debuffCount}>-{activeDebuffsList.length}</span>}
+            </span>
+          </div>
+          <div className={styles.activeEffectsList}>
+            {activeBuffs.map((buff) => {
+              const effects = parseStatEffects(buff.stat_effects);
+              const effectStr = Object.entries(effects)
+                .map(([k, v]) => `${v > 0 ? '+' : ''}${v} ${k.slice(0, 3)}`)
+                .join(' ');
+              return (
+                <div
+                  key={buff.id}
+                  className={`${styles.activeEffectChip} ${buff.type === 'buff' ? styles.buffChip : styles.debuffChip}`}
+                >
+                  <span className={styles.chipIcon}>{buff.icon}</span>
+                  <div className={styles.chipInfo}>
+                    <span className={styles.chipName}>{buff.name}</span>
+                    <span className={styles.chipMeta}>{getRemainingTime(buff.expires_at)} • {effectStr}</span>
+                  </div>
+                  <button className={styles.chipRemove} onClick={() => onDeactivateBuff(buff.id)}>×</button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
-      {/* Streak Shield Inventory */}
+      {/* Quick Actions */}
+      {(quickActionBuffs.length > 0 || quickActionDebuffs.length > 0) && (
+        <div className={styles.quickActions}>
+          <div className={styles.quickActionsHeader}>
+            <span className={styles.quickActionsTitle}>Quick Actions</span>
+            <span className={styles.quickActionsHint}>Tap to activate</span>
+          </div>
+          <div className={styles.quickActionsGrid}>
+            {quickActionBuffs.map((def) => {
+              const streak = streakInfos?.get(def.id);
+              const isActive = activeBuffs.some((b) => b.definition_id === def.id);
+              return (
+                <button
+                  key={def.id}
+                  className={`${styles.quickActionBtn} ${styles.quickBuff} ${isActive ? styles.isActive : ''}`}
+                  onClick={() => onActivateBuff(def.id)}
+                  disabled={isActive}
+                >
+                  <span className={styles.quickIcon}>{def.icon}</span>
+                  <span className={styles.quickName}>{def.name}</span>
+                  {streak && streak.currentStreak > 0 && (
+                    <span className={styles.quickStreak}>🔥{streak.currentStreak}</span>
+                  )}
+                </button>
+              );
+            })}
+            {quickActionDebuffs.map((def) => {
+              const isActive = activeBuffs.some((b) => b.definition_id === def.id);
+              return (
+                <button
+                  key={def.id}
+                  className={`${styles.quickActionBtn} ${styles.quickDebuff} ${isActive ? styles.isActive : ''}`}
+                  onClick={() => onActivateBuff(def.id)}
+                  disabled={isActive}
+                >
+                  <span className={styles.quickIcon}>{def.icon}</span>
+                  <span className={styles.quickName}>{def.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Shield Inventory */}
       <div className={styles.shieldInventory}>
         <span className={styles.shieldIcon}>🛡️</span>
         <div className={styles.shieldInfo}>
@@ -186,77 +276,80 @@ export function BuffTracker({
         <span className={styles.shieldCount}>{shieldCount}</span>
       </div>
 
-      {/* Active Effects */}
-      {activeBuffs.length > 0 && (
-        <RPGPanel header="Active Effects" glow>
-          <div className={styles.activeSection}>
-            {activeBuffs.map((buff) => {
-              const effects = parseStatEffects(buff.stat_effects);
-              const effectStr = Object.entries(effects)
-                .map(([k, v]) => `${v > 0 ? '+' : ''}${v} ${k}`)
-                .join(', ');
-              return (
-                <div
-                  key={buff.id}
-                  className={`${styles.activeBuffItem} ${buff.type === 'buff' ? styles.isBuff : styles.isDebuff}`}
-                >
-                  <span className={styles.activeBuffIcon}>{buff.icon}</span>
-                  <div className={styles.activeBuffInfo}>
-                    <div className={styles.activeBuffName}>{buff.name}</div>
-                    <div className={styles.activeBuffTimer}>{getRemainingTime(buff.expires_at)} remaining</div>
-                    {effectStr && <div className={styles.activeBuffEffects}>{effectStr}</div>}
-                  </div>
-                  <RPGButton size="small" variant="danger" onClick={() => onDeactivateBuff(buff.id)}>
-                    Remove
-                  </RPGButton>
-                </div>
-              );
-            })}
+      {/* Toolbar */}
+      <div className={styles.buffToolbar}>
+        <RPGButton variant="primary" onClick={() => { resetForm(); setShowForm(true); }}>
+          + New Buff/Debuff
+        </RPGButton>
+      </div>
+
+      {/* Collapsible Buffs Section */}
+      <div className={styles.collapsibleSection}>
+        <div
+          className={styles.sectionHeader}
+          onClick={() => setExpandedBuffs(!expandedBuffs)}
+        >
+          <span className={`${styles.sectionExpand} ${expandedBuffs ? styles.expanded : ''}`}>▶</span>
+          <span className={styles.sectionIcon}>✨</span>
+          <span className={styles.sectionTitle}>Buffs (Positive Habits)</span>
+          <span className={styles.sectionCount}>{buffs.length}</span>
+        </div>
+        {expandedBuffs && (
+          <div className={styles.sectionContent}>
+            {buffs.length === 0 ? (
+              <div className={styles.emptyStateSmall}>No buffs defined yet. Create one above!</div>
+            ) : (
+              <div className={styles.compactGrid}>
+                {buffs.map((def) => (
+                  <CompactBuffCard
+                    key={def.id}
+                    definition={def}
+                    onActivate={onActivateBuff}
+                    onDelete={onDeleteDefinition}
+                    streakInfo={streakInfos?.get(def.id)}
+                    shieldCount={shieldCount}
+                    onUseShield={onUseShield}
+                    unclaimedMilestones={getUnclaimedMilestones?.(def.id) || []}
+                    onClaimMilestones={onClaimMilestones}
+                    isActive={activeBuffs.some((b) => b.definition_id === def.id)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
-        </RPGPanel>
-      )}
+        )}
+      </div>
 
-      <div className={styles.buffGrid}>
-        {/* Buffs */}
-        <RPGPanel header="Buffs (Positive Habits)">
-          {buffs.length === 0 ? (
-            <div className={styles.emptyState}>No buffs defined yet</div>
-          ) : (
-            <div className={styles.buffSection}>
-              {buffs.map((def) => (
-                <BuffDefCard
-                  key={def.id}
-                  definition={def}
-                  onActivate={onActivateBuff}
-                  onDelete={onDeleteDefinition}
-                  streakInfo={streakInfos?.get(def.id)}
-                  shieldCount={shieldCount}
-                  onUseShield={onUseShield}
-                  unclaimedMilestones={getUnclaimedMilestones?.(def.id) || []}
-                  onClaimMilestones={onClaimMilestones}
-                />
-              ))}
-            </div>
-          )}
-        </RPGPanel>
-
-        {/* Debuffs */}
-        <RPGPanel header="Debuffs (Negative Habits)">
-          {debuffs.length === 0 ? (
-            <div className={styles.emptyState}>No debuffs defined yet</div>
-          ) : (
-            <div className={styles.buffSection}>
-              {debuffs.map((def) => (
-                <BuffDefCard
-                  key={def.id}
-                  definition={def}
-                  onActivate={onActivateBuff}
-                  onDelete={onDeleteDefinition}
-                />
-              ))}
-            </div>
-          )}
-        </RPGPanel>
+      {/* Collapsible Debuffs Section */}
+      <div className={styles.collapsibleSection}>
+        <div
+          className={`${styles.sectionHeader} ${styles.debuffHeader}`}
+          onClick={() => setExpandedDebuffs(!expandedDebuffs)}
+        >
+          <span className={`${styles.sectionExpand} ${expandedDebuffs ? styles.expanded : ''}`}>▶</span>
+          <span className={styles.sectionIcon}>💀</span>
+          <span className={styles.sectionTitle}>Debuffs (Negative Habits)</span>
+          <span className={styles.sectionCount}>{debuffs.length}</span>
+        </div>
+        {expandedDebuffs && (
+          <div className={styles.sectionContent}>
+            {debuffs.length === 0 ? (
+              <div className={styles.emptyStateSmall}>No debuffs defined yet.</div>
+            ) : (
+              <div className={styles.compactGrid}>
+                {debuffs.map((def) => (
+                  <CompactBuffCard
+                    key={def.id}
+                    definition={def}
+                    onActivate={onActivateBuff}
+                    onDelete={onDeleteDefinition}
+                    isActive={activeBuffs.some((b) => b.definition_id === def.id)}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Create Form */}
@@ -338,7 +431,7 @@ export function BuffTracker({
   );
 }
 
-function BuffDefCard({
+function CompactBuffCard({
   definition,
   onActivate,
   onDelete,
@@ -347,6 +440,7 @@ function BuffDefCard({
   onUseShield,
   unclaimedMilestones = [],
   onClaimMilestones,
+  isActive,
 }: {
   definition: BuffDefinition;
   onActivate: (id: number) => void;
@@ -356,83 +450,79 @@ function BuffDefCard({
   onUseShield?: (buffDefinitionId: number) => Promise<boolean>;
   unclaimedMilestones?: StreakMilestone[];
   onClaimMilestones?: (buffDefinitionId: number) => Promise<StreakMilestone[]>;
+  isActive?: boolean;
 }) {
   const effects = parseStatEffects(definition.stat_effects);
   const effectStr = Object.entries(effects)
-    .map(([k, v]) => `${v > 0 ? '+' : ''}${v} ${k}`)
-    .join(', ');
+    .map(([k, v]) => `${v > 0 ? '+' : ''}${v} ${k.slice(0, 3)}`)
+    .join(' ');
 
   const currentMilestone = streakInfo ? getLatestMilestone(streakInfo.currentStreak) : null;
   const hasStreak = streakInfo && streakInfo.currentStreak > 0;
   const isAtRisk = streakInfo?.isAtRisk && !streakInfo?.shieldActive;
   const hasShieldActive = streakInfo?.shieldActive;
 
-  const handleUseShield = async () => {
+  const handleUseShield = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (onUseShield && streakInfo) {
       await onUseShield(definition.id);
     }
   };
 
-  const handleClaimMilestones = async () => {
+  const handleClaimMilestones = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (onClaimMilestones) {
       await onClaimMilestones(definition.id);
     }
   };
 
   return (
-    <div className={styles.buffCard}>
-      <span className={styles.buffCardIcon}>{definition.icon}</span>
-      <div className={styles.buffCardInfo}>
-        <div className={styles.buffCardName}>
-          {definition.name}
-          {currentMilestone && (
-            <span className={styles.milestoneBadge}>
-              <span className={styles.milestoneIcon}>{currentMilestone.icon}</span>
-              {currentMilestone.title}
-            </span>
-          )}
+    <div
+      className={`${styles.compactCard} ${definition.type === 'buff' ? styles.compactBuff : styles.compactDebuff} ${isActive ? styles.cardActive : ''}`}
+      onClick={() => !isActive && onActivate(definition.id)}
+    >
+      <div className={styles.compactCardMain}>
+        <span className={styles.compactIcon}>{definition.icon}</span>
+        <div className={styles.compactInfo}>
+          <div className={styles.compactName}>
+            {definition.name}
+            {currentMilestone && (
+              <span className={styles.compactMilestone}>{currentMilestone.icon}</span>
+            )}
+          </div>
+          <div className={styles.compactMeta}>
+            {formatDuration(definition.duration_hours)} • {effectStr}
+          </div>
         </div>
-        {definition.description && <div className={styles.buffCardDesc}>{definition.description}</div>}
-        <div className={styles.buffCardMeta}>
-          <span className={`${styles.buffTypeBadge} ${definition.type === 'buff' ? styles.buffTypeBuff : styles.buffTypeDebuff}`}>
-            {definition.type}
-          </span>
-          {' '}{formatDuration(definition.duration_hours)}
-          {effectStr && ` — ${effectStr}`}
-        </div>
-        {/* Streak display for buffs */}
-        {definition.type === 'buff' && hasStreak && (
-          <div className={`${styles.streakBadge} ${isAtRisk ? styles.atRisk : ''} ${hasShieldActive ? styles.shieldActive : ''}`}>
-            <span className={styles.streakIcon}>{hasShieldActive ? '🛡️' : '🔥'}</span>
-            <span className={styles.streakCount}>{streakInfo!.currentStreak}</span>
-            <span className={styles.streakLabel}>
-              day streak
-              {isAtRisk && ' (at risk!)'}
-              {hasShieldActive && ' (protected)'}
-            </span>
+        {hasStreak && (
+          <div className={`${styles.compactStreak} ${isAtRisk ? styles.atRisk : ''} ${hasShieldActive ? styles.shieldActive : ''}`}>
+            {hasShieldActive ? '🛡️' : '🔥'}{streakInfo!.currentStreak}
           </div>
         )}
-        {/* Use shield button when at risk */}
+      </div>
+
+      {/* Action buttons */}
+      <div className={styles.compactActions}>
         {isAtRisk && shieldCount > 0 && onUseShield && (
-          <RPGButton size="small" variant="ghost" onClick={handleUseShield} style={{ marginTop: 6 }}>
-            🛡️ Use Shield
-          </RPGButton>
+          <button className={styles.compactActionBtn} onClick={handleUseShield} title="Use Shield">
+            🛡️
+          </button>
         )}
-        {/* Claim milestones button */}
         {unclaimedMilestones.length > 0 && onClaimMilestones && (
-          <RPGButton size="small" variant="primary" onClick={handleClaimMilestones} className={styles.claimMilestone}>
-            🏆 Claim {unclaimedMilestones.length} Milestone{unclaimedMilestones.length > 1 ? 's' : ''}!
-          </RPGButton>
+          <button className={`${styles.compactActionBtn} ${styles.claimBtn}`} onClick={handleClaimMilestones} title="Claim Milestone">
+            🏆
+          </button>
         )}
+        <button
+          className={`${styles.compactActionBtn} ${styles.deleteBtn}`}
+          onClick={(e) => { e.stopPropagation(); onDelete(definition.id); }}
+          title="Delete"
+        >
+          ×
+        </button>
       </div>
-      <div className={styles.buffCardActions}>
-        <RPGButton size="small" variant="primary" onClick={() => onActivate(definition.id)}>
-          Activate
-        </RPGButton>
-        <RPGButton size="small" variant="danger" onClick={() => onDelete(definition.id)}>
-          Delete
-        </RPGButton>
-      </div>
+
+      {isActive && <div className={styles.activeIndicator}>Active</div>}
     </div>
   );
 }

@@ -1,149 +1,460 @@
 .buffTracker {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 .buffToolbar {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  justify-content: flex-end;
 }
 
-.buffToolbar > :first-child {
-  flex: 1;
-}
-
-.buffGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-.buffSection {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-/* Buff Card */
-.buffCard {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 16px;
+/* Active Effects Bar */
+.activeEffectsBar {
   background: var(--bg-dark);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
-  transition: all var(--transition-fast);
+  padding: 12px;
 }
 
-.buffCard:hover {
-  border-color: var(--border-gold);
+.activeEffectsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
 }
 
-.buffCardIcon {
-  font-size: 1.8rem;
-  flex-shrink: 0;
+.activeEffectsTitle {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  color: var(--text-gold);
 }
 
-.buffCardInfo {
-  flex: 1;
+.activeEffectsCount {
+  display: flex;
+  gap: 8px;
 }
 
-.buffCardName {
-  font-weight: 600;
-  font-size: 1rem;
-  margin-bottom: 2px;
-}
-
-.buffCardDesc {
+.buffCount {
+  color: var(--buff-color);
+  font-family: var(--font-heading);
   font-size: 0.85rem;
-  color: var(--text-secondary);
-  margin-bottom: 4px;
 }
 
-.buffCardMeta {
+.debuffCount {
+  color: var(--debuff-color);
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+}
+
+.activeEffectsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.activeEffectChip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  flex: 1;
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.buffChip {
+  background: rgba(46, 204, 113, 0.1);
+  border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.debuffChip {
+  background: rgba(231, 76, 60, 0.1);
+  border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+.chipIcon {
+  font-size: 1.2rem;
+}
+
+.chipInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.chipName {
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chipMeta {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+}
+
+.chipRemove {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.chipRemove:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+/* Quick Actions */
+.quickActions {
+  background: var(--bg-dark);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--border-radius);
+  padding: 12px;
+}
+
+.quickActionsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.quickActionsTitle {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  color: var(--text-gold);
+}
+
+.quickActionsHint {
   font-size: 0.75rem;
   color: var(--text-dim);
 }
 
-.buffCardActions {
+.quickActionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+.quickActionBtn {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
-.buffTypeBadge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-size: 0.7rem;
-  font-family: var(--font-heading);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.buffTypeBuff {
-  background: rgba(46, 204, 113, 0.15);
-  color: var(--buff-color);
-  border: 1px solid rgba(46, 204, 113, 0.3);
-}
-
-.buffTypeDebuff {
-  background: rgba(231, 76, 60, 0.15);
-  color: var(--debuff-color);
-  border: 1px solid rgba(231, 76, 60, 0.3);
-}
-
-/* Active Buffs Section */
-.activeSection {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.activeBuffItem {
-  display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  border-radius: var(--border-radius);
+  gap: 4px;
+  padding: 12px 8px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
 }
 
-.activeBuffItem.isBuff {
-  background: rgba(46, 204, 113, 0.06);
-  border: 1px solid rgba(46, 204, 113, 0.2);
-  animation: buffPulse 3s ease-in-out infinite;
+.quickBuff {
+  background: rgba(46, 204, 113, 0.1);
+  border-color: rgba(46, 204, 113, 0.2);
 }
 
-.activeBuffItem.isDebuff {
-  background: rgba(231, 76, 60, 0.06);
-  border: 1px solid rgba(231, 76, 60, 0.2);
-  animation: debuffThrob 2s ease-in-out infinite;
+.quickBuff:hover:not(:disabled) {
+  background: rgba(46, 204, 113, 0.2);
+  border-color: rgba(46, 204, 113, 0.4);
 }
 
-.activeBuffIcon {
+.quickDebuff {
+  background: rgba(231, 76, 60, 0.1);
+  border-color: rgba(231, 76, 60, 0.2);
+}
+
+.quickDebuff:hover:not(:disabled) {
+  background: rgba(231, 76, 60, 0.2);
+  border-color: rgba(231, 76, 60, 0.4);
+}
+
+.quickActionBtn.isActive {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.quickIcon {
   font-size: 1.5rem;
 }
 
-.activeBuffInfo {
+.quickName {
+  font-size: 0.75rem;
+  text-align: center;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.quickStreak {
+  font-size: 0.7rem;
+  color: #ff8c00;
+  font-family: var(--font-heading);
+}
+
+/* Shield Inventory */
+.shieldInventory {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, rgba(0, 191, 255, 0.08), rgba(30, 144, 255, 0.05));
+  border: 1px solid rgba(0, 191, 255, 0.2);
+  border-radius: var(--border-radius);
+}
+
+.shieldIcon {
+  font-size: 1.3rem;
+}
+
+.shieldInfo {
   flex: 1;
 }
 
-.activeBuffName {
-  font-weight: 600;
+.shieldTitle {
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  color: #00bfff;
 }
 
-.activeBuffTimer {
-  font-size: 0.8rem;
+.shieldDesc {
+  font-size: 0.7rem;
   color: var(--text-dim);
 }
 
-.activeBuffEffects {
+.shieldCount {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  color: #00bfff;
+  padding: 4px 10px;
+  background: rgba(0, 191, 255, 0.1);
+  border-radius: 6px;
+}
+
+/* Collapsible Sections */
+.collapsibleSection {
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  user-select: none;
+  background: var(--bg-medium);
+  transition: background var(--transition-fast);
+}
+
+.sectionHeader:hover {
+  background: var(--bg-lighter);
+}
+
+.debuffHeader {
+  border-left: 3px solid var(--debuff-color);
+}
+
+.sectionExpand {
+  color: var(--text-dim);
+  font-size: 0.7rem;
+  transition: transform var(--transition-fast);
+}
+
+.sectionExpand.expanded {
+  transform: rotate(90deg);
+}
+
+.sectionIcon {
+  font-size: 1.1rem;
+}
+
+.sectionTitle {
+  flex: 1;
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.sectionCount {
+  font-family: var(--font-heading);
   font-size: 0.8rem;
-  color: var(--text-secondary);
+  color: var(--text-dim);
+  padding: 2px 8px;
+  background: var(--bg-dark);
+  border-radius: 10px;
+}
+
+.sectionContent {
+  padding: 12px;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Compact Grid */
+.compactGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 8px;
+}
+
+/* Compact Card */
+.compactCard {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.compactBuff {
+  background: rgba(46, 204, 113, 0.06);
+  border: 1px solid rgba(46, 204, 113, 0.15);
+}
+
+.compactBuff:hover {
+  background: rgba(46, 204, 113, 0.12);
+  border-color: rgba(46, 204, 113, 0.3);
+}
+
+.compactDebuff {
+  background: rgba(231, 76, 60, 0.06);
+  border: 1px solid rgba(231, 76, 60, 0.15);
+}
+
+.compactDebuff:hover {
+  background: rgba(231, 76, 60, 0.12);
+  border-color: rgba(231, 76, 60, 0.3);
+}
+
+.cardActive {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.compactCardMain {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.compactIcon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.compactInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.compactName {
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.compactMilestone {
+  font-size: 0.8rem;
+}
+
+.compactMeta {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.compactStreak {
+  font-size: 0.8rem;
+  font-family: var(--font-heading);
+  color: #ff8c00;
+  padding: 2px 6px;
+  background: rgba(255, 140, 0, 0.15);
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.compactStreak.atRisk {
+  color: #ffc107;
+  background: rgba(255, 193, 7, 0.15);
+  animation: riskPulse 1.5s ease-in-out infinite;
+}
+
+.compactStreak.shieldActive {
+  color: #00bfff;
+  background: rgba(0, 191, 255, 0.15);
+}
+
+.compactActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.compactActionBtn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all var(--transition-fast);
+}
+
+.compactActionBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+.claimBtn {
+  color: var(--gold);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.deleteBtn:hover {
+  color: var(--debuff-color);
+}
+
+.activeIndicator {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 0.65rem;
+  color: var(--buff-color);
+  background: rgba(46, 204, 113, 0.2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+}
+
+/* Empty States */
+.emptyState {
+  text-align: center;
+  color: var(--text-dim);
+  font-style: italic;
+  padding: 20px;
+}
+
+.emptyStateSmall {
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  padding: 16px;
 }
 
 /* Form */
@@ -166,6 +477,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-bottom: 4px;
 }
 
 .statEffectLabel {
@@ -185,135 +497,40 @@
   margin: 4px 0;
 }
 
-.emptyState {
-  text-align: center;
-  color: var(--text-dim);
-  font-style: italic;
-  padding: 20px;
-}
-
-/* Streak display */
-.streakBadge {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.75rem;
-  font-family: var(--font-heading);
-  padding: 3px 8px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, rgba(255, 140, 0, 0.15), rgba(255, 69, 0, 0.15));
-  border: 1px solid rgba(255, 140, 0, 0.3);
-  color: #ff8c00;
-  margin-top: 4px;
-  width: fit-content;
-}
-
-.streakBadge.atRisk {
-  background: linear-gradient(135deg, rgba(255, 193, 7, 0.15), rgba(255, 152, 0, 0.15));
-  border-color: rgba(255, 193, 7, 0.4);
-  color: #ffc107;
-  animation: riskPulse 1.5s ease-in-out infinite;
-}
-
-.streakBadge.shieldActive {
-  background: linear-gradient(135deg, rgba(0, 191, 255, 0.15), rgba(30, 144, 255, 0.15));
-  border-color: rgba(0, 191, 255, 0.4);
-  color: #00bfff;
-}
-
-.streakIcon {
-  font-size: 0.85rem;
-}
-
-.streakCount {
-  font-weight: 600;
-}
-
-.streakLabel {
-  opacity: 0.8;
-}
-
+/* Animations */
 @keyframes riskPulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.7; }
 }
 
-/* Shield inventory */
-.shieldInventory {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  background: linear-gradient(135deg, rgba(0, 191, 255, 0.08), rgba(30, 144, 255, 0.05));
-  border: 1px solid rgba(0, 191, 255, 0.2);
-  border-radius: var(--border-radius);
-  margin-bottom: 16px;
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
 }
 
-.shieldIcon {
-  font-size: 1.5rem;
+@keyframes buffPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+  50% { box-shadow: 0 0 8px 2px rgba(46, 204, 113, 0.2); }
 }
 
-.shieldInfo {
-  flex: 1;
+@keyframes debuffThrob {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+  50% { box-shadow: 0 0 8px 2px rgba(231, 76, 60, 0.2); }
 }
 
-.shieldTitle {
-  font-family: var(--font-heading);
-  font-size: 0.9rem;
-  color: #00bfff;
-}
-
-.shieldDesc {
-  font-size: 0.75rem;
-  color: var(--text-dim);
-}
-
-.shieldCount {
-  font-family: var(--font-heading);
-  font-size: 1.2rem;
-  color: #00bfff;
-  padding: 4px 12px;
-  background: rgba(0, 191, 255, 0.1);
-  border-radius: 8px;
-}
-
-/* Milestone badge */
-.milestoneBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.7rem;
-  padding: 2px 6px;
-  background: linear-gradient(135deg, rgba(200, 168, 78, 0.2), rgba(255, 215, 0, 0.15));
-  border: 1px solid var(--border-gold);
-  border-radius: 8px;
-  color: var(--text-gold);
-  margin-left: 6px;
-}
-
-.milestoneIcon {
-  font-size: 0.75rem;
-}
-
-/* Streak freeze indicator */
-.freezeIndicator {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.7rem;
-  color: #87ceeb;
-  margin-top: 2px;
-}
-
-/* Claim milestone button */
-.claimMilestone {
-  margin-top: 6px;
-}
-
+/* Mobile Responsive */
 @media (max-width: 768px) {
-  .buffGrid {
+  .compactGrid {
     grid-template-columns: 1fr;
+  }
+
+  .quickActionsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .activeEffectChip {
+    min-width: 100%;
+    max-width: 100%;
   }
 
   .formRow {

@@ -107,14 +107,16 @@ export interface DeactivateBuffResult {
   definitionId: number;
   buffType: 'buff' | 'debuff';
   buffName: string;
+  fullyDeactivated: boolean; // true if buff was completely removed, false if just reduced duration
+  newExpiresAt: string | null; // null if fully deactivated
 }
 
 export async function deactivateBuff(logId: number): Promise<DeactivateBuffResult | null> {
   const db = getDB();
 
-  // Get buff info before deactivating
+  // Get buff info including duration and current expiry
   const infoResult = db.exec(
-    `SELECT bl.definition_id, bd.type, bd.name
+    `SELECT bl.definition_id, bd.type, bd.name, bd.duration_hours, bl.expires_at, bl.activated_at
      FROM buff_log bl
      JOIN buff_definitions bd ON bl.definition_id = bd.id
      WHERE bl.id = ?`,
@@ -125,12 +127,34 @@ export async function deactivateBuff(logId: number): Promise<DeactivateBuffResul
     return null;
   }
 
-  const [definitionId, buffType, buffName] = infoResult[0].values[0] as [number, 'buff' | 'debuff', string];
+  const [definitionId, buffType, buffName, durationHours, currentExpiresAt, activatedAt] =
+    infoResult[0].values[0] as [number, 'buff' | 'debuff', string, number, string, string];
 
-  db.run('UPDATE buff_log SET is_active = 0 WHERE id = ?', [logId]);
-  await persist();
+  // Calculate new expiry by subtracting the buff's duration
+  const newExpiryResult = db.exec(
+    `SELECT datetime(?, '-' || ? || ' hours')`,
+    [currentExpiresAt, durationHours]
+  );
+  const newExpiresAt = newExpiryResult[0].values[0][0] as string;
 
-  return { definitionId, buffType, buffName };
+  // Check if new expiry is still in the future (buff still has time from previous stacks)
+  const stillActiveResult = db.exec(
+    `SELECT datetime('now') < datetime(?)`,
+    [newExpiresAt]
+  );
+  const stillActive = stillActiveResult[0].values[0][0] === 1;
+
+  if (stillActive) {
+    // Just reduce the duration, keep buff active
+    db.run('UPDATE buff_log SET expires_at = ? WHERE id = ?', [newExpiresAt, logId]);
+    await persist();
+    return { definitionId, buffType, buffName, fullyDeactivated: false, newExpiresAt };
+  } else {
+    // Fully deactivate the buff
+    db.run('UPDATE buff_log SET is_active = 0 WHERE id = ?', [logId]);
+    await persist();
+    return { definitionId, buffType, buffName, fullyDeactivated: true, newExpiresAt: null };
+  }
 }
 
 export function getXPAwardedForBuff(logId: number): number {

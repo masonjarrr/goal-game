@@ -108,24 +108,33 @@ export function useBuffs({ grantXP, deductXP, scheduleBuffExpiry, cancelBuffExpi
 
   const deactivateBuff = useCallback(
     async (logId: number) => {
-      // Cancel notification for buff expiry
-      if (cancelBuffExpiry) {
-        await cancelBuffExpiry(logId);
-      }
-
       // Get XP that was awarded for this buff before deactivating
       const xpAwarded = buffRepo.getXPAwardedForBuff(logId);
 
       const result = await buffRepo.deactivateBuff(logId);
 
-      // Deduct XP if this was a buff (not debuff) and XP was awarded
-      if (result && result.buffType === 'buff' && xpAwarded > 0) {
-        await deductXP(xpAwarded, `Deactivated buff: ${result.buffName}`, 'buff_undo', logId);
+      if (result) {
+        if (result.fullyDeactivated) {
+          // Buff was completely removed - cancel notification and deduct XP
+          if (cancelBuffExpiry) {
+            await cancelBuffExpiry(logId);
+          }
+          // Deduct XP if this was a buff (not debuff) and XP was awarded
+          if (result.buffType === 'buff' && xpAwarded > 0) {
+            await deductXP(xpAwarded, `Deactivated buff: ${result.buffName}`, 'buff_undo', logId);
+          }
+        } else {
+          // Buff still has time remaining - reschedule notification with new expiry
+          if (scheduleBuffExpiry && cancelBuffExpiry && result.newExpiresAt) {
+            await cancelBuffExpiry(logId);
+            await scheduleBuffExpiry(logId, result.buffName, result.buffType, result.newExpiresAt);
+          }
+        }
       }
 
       refresh();
     },
-    [refresh, cancelBuffExpiry, deductXP]
+    [refresh, cancelBuffExpiry, scheduleBuffExpiry, deductXP]
   );
 
   return {

@@ -75,14 +75,16 @@ export function useBuffs({ grantXP, deductXP, scheduleBuffExpiry, cancelBuffExpi
         }
       })();
 
-      // Award XP for buff activation (habits) - only if not stacking and has stat effects
-      if (def && def.type === 'buff' && !result.isStacked && hasStatEffects) {
+      // Award XP for every buff activation (including stacking)
+      if (def && def.type === 'buff' && hasStatEffects) {
         await grantXP(XP_DAILY_BUFF, `Activated buff: ${def.name}`, 'buff', result.logId);
 
-        // Check 7-day streak
-        const streak = buffRepo.getStreakDays(definitionId);
-        if (streak > 0 && streak % 7 === 0) {
-          await grantXP(XP_STREAK_7DAY, `7-day streak: ${def.name}`, 'streak', definitionId);
+        // Check 7-day streak (only on first activation, not stacks)
+        if (!result.isStacked) {
+          const streak = buffRepo.getStreakDays(definitionId);
+          if (streak > 0 && streak % 7 === 0) {
+            await grantXP(XP_STREAK_7DAY, `7-day streak: ${def.name}`, 'streak', definitionId);
+          }
         }
       }
 
@@ -108,20 +110,18 @@ export function useBuffs({ grantXP, deductXP, scheduleBuffExpiry, cancelBuffExpi
 
   const deactivateBuff = useCallback(
     async (logId: number) => {
-      // Get XP that was awarded for this buff before deactivating
-      const xpAwarded = buffRepo.getXPAwardedForBuff(logId);
-
       const result = await buffRepo.deactivateBuff(logId);
 
       if (result) {
+        // Always deduct XP for each undo (since each activation awards XP)
+        if (result.buffType === 'buff') {
+          await deductXP(XP_DAILY_BUFF, `Undo buff: ${result.buffName}`, 'buff_undo', logId);
+        }
+
         if (result.fullyDeactivated) {
-          // Buff was completely removed - cancel notification and deduct XP
+          // Buff was completely removed - cancel notification
           if (cancelBuffExpiry) {
             await cancelBuffExpiry(logId);
-          }
-          // Deduct XP if this was a buff (not debuff) and XP was awarded
-          if (result.buffType === 'buff' && xpAwarded > 0) {
-            await deductXP(xpAwarded, `Deactivated buff: ${result.buffName}`, 'buff_undo', logId);
           }
         } else {
           // Buff still has time remaining - reschedule notification with new expiry

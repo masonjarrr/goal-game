@@ -1,0 +1,147 @@
+.header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: var(--bg-medium);
+  border: 1px solid var(--border-gold);
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.spriteContainer {
+  flex-shrink: 0;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.name {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.level {
+  padding: 2px 8px;
+  background: var(--gold);
+  color: var(--bg-dark);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: var(--font-heading);
+}
+
+.title {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.xpRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.xpRow > *:first-child {
+  flex: 1;
+  max-width: 200px;
+}
+
+.xpText {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.quickStats {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.quickStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 10px;
+  background: var(--bg-dark);
+  border-radius: 8px;
+  min-width: 44px;
+}
+
+.statIcon {
+  font-size: 0.9rem;
+}
+
+.statValue {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-heading);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .header {
+    flex-wrap: wrap;
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .spriteContainer {
+    order: 1;
+  }
+
+  .info {
+    order: 2;
+    flex: 1 1 auto;
+  }
+
+  .quickStats {
+    order: 3;
+    width: 100%;
+    justify-content: space-between;
+    padding-top: 8px;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .quickStat {
+    flex: 1;
+    padding: 8px 4px;
+  }
+
+  .nameRow {
+    margin-bottom: 6px;
+  }
+
+  .name {
+    font-size: 1rem;
+  }
+
+  .xpRow > *:first-child {
+    max-width: none;
+  }
+
+  .xpText {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    display: none;
+  }
+}

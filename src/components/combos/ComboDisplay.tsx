@@ -7,9 +7,10 @@ interface ComboDisplayProps {
   combos: ComboWithStatus[];
   loading?: boolean;
   onClaimCombo: (comboId: number) => void;
+  compact?: boolean;
 }
 
-export function ComboDisplay({ combos, loading, onClaimCombo }: ComboDisplayProps) {
+export function ComboDisplay({ combos, loading, onClaimCombo, compact = false }: ComboDisplayProps) {
   const readyCombos = combos.filter((c) => c.is_ready);
   const inProgressCombos = combos.filter((c) => c.progress > 0 && !c.is_ready);
   const notStartedCombos = combos.filter((c) => c.progress === 0);

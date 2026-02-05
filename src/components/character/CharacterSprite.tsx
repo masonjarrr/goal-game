@@ -7,9 +7,10 @@ import styles from '../../styles/components/character-sprite.module.css';
 interface CharacterSpriteProps {
   level: number;
   stats: Stats;
+  size?: 'small' | 'medium' | 'large';
 }
 
-export function CharacterSprite({ level, stats }: CharacterSpriteProps) {
+export function CharacterSprite({ level, stats, size = 'medium' }: CharacterSpriteProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const tier = getEquipmentTier(level);
 
@@ -47,8 +48,10 @@ export function CharacterSprite({ level, stats }: CharacterSpriteProps) {
     '--aura-charisma-color': STAT_AURA_COLORS.charisma,
   } as React.CSSProperties;
 
+  const sizeClass = size === 'small' ? styles.small : size === 'large' ? styles.large : '';
+
   return (
-    <div className={styles.spriteContainer} style={auraStyles}>
+    <div className={`${styles.spriteContainer} ${sizeClass}`} style={auraStyles}>
       {/* Aura layers (behind character) */}
       {auraIntensities.stamina > 0 && (
         <div className={`${styles.auraLayer} ${styles.auraStamina}`} />

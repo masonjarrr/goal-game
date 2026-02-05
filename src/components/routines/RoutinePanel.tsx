@@ -17,6 +17,7 @@ interface RoutinePanelProps {
   onAddStep: (routineId: number, title: string, description: string, linkedBuffId: number | null, durationMinutes: number, isOptional: boolean) => void;
   onDeleteStep: (stepId: number) => void;
   getStepsWithStatus: (routineId: number) => RoutineStepWithStatus[];
+  compact?: boolean;
 }
 
 export function RoutinePanel({
@@ -30,6 +31,7 @@ export function RoutinePanel({
   onAddStep,
   onDeleteStep,
   getStepsWithStatus,
+  compact = false,
 }: RoutinePanelProps) {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingRoutineId, setEditingRoutineId] = useState<number | null>(null);

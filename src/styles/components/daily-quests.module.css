@@ -218,3 +218,108 @@
   padding: 20px;
   font-style: italic;
 }
+
+/* Compact mode styles */
+.compactPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.questItemCompact {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.questItemCompact:last-child {
+  border-bottom: none;
+}
+
+.questItemCompact.completed {
+  opacity: 0.7;
+}
+
+.questCheckboxCompact {
+  font-size: 0.9rem;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.questItemCompact.completed .questCheckboxCompact {
+  color: var(--stat-green);
+}
+
+.questNameCompact {
+  flex: 1;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.questItemCompact.completed .questNameCompact {
+  text-decoration: line-through;
+  color: var(--text-dim);
+}
+
+.progressBarCompact {
+  width: 60px;
+  height: 4px;
+  background: var(--bg-dark);
+  border-radius: 2px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.progressFillCompact {
+  height: 100%;
+  background: var(--gold);
+  border-radius: 2px;
+  transition: width 0.2s ease;
+}
+
+.questItemCompact.completed .progressFillCompact {
+  background: var(--stat-green);
+}
+
+.progressTextCompact {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  min-width: 35px;
+  text-align: right;
+}
+
+.compactBonus {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, rgba(200, 168, 78, 0.15), rgba(200, 168, 78, 0.05));
+  border: 1px solid var(--border-gold);
+  border-radius: 6px;
+  margin-top: 8px;
+}
+
+.compactBonus span {
+  color: var(--gold);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.compactBonusClaimed {
+  text-align: center;
+  padding: 8px 12px;
+  background: rgba(46, 204, 113, 0.1);
+  border: 1px solid var(--stat-green);
+  border-radius: 6px;
+  color: var(--stat-green);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 8px;
+}

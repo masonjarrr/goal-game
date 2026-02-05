@@ -24,6 +24,8 @@ import { Sidebar } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
 import { LevelUpModal } from './components/layout/LevelUpModal';
 import { CharacterScreen } from './components/character/CharacterScreen';
+import { CharacterHeader } from './components/character/CharacterHeader';
+import { AccordionSection } from './components/ui/Accordion';
 import { QuestLog } from './components/quests/QuestLog';
 import { BuffTracker } from './components/buffs/BuffTracker';
 import { BackupSettings } from './components/settings/BackupSettings';
@@ -227,9 +229,12 @@ function AppContent({ activeTab, setActiveTab }: { activeTab: TabId; setActiveTa
       <main className={styles.main}>
         {activeTab === 'character' && (
           <>
-            {/* Random Event Banner */}
+            {/* Compact Character Header */}
+            <CharacterHeader character={char.character} stats={buffs.stats} />
+
+            {/* Random Event Banner (only if events exist) */}
             {randomEvents.activeEvents.length > 0 && (
-              <div style={{ marginBottom: 20 }}>
+              <div style={{ marginBottom: 12 }}>
                 {randomEvents.activeEvents.map((event) => (
                   <div
                     key={event.id}
@@ -237,19 +242,21 @@ function AppContent({ activeTab, setActiveTab }: { activeTab: TabId; setActiveTa
                       background: 'linear-gradient(135deg, rgba(200,168,78,0.2), rgba(200,168,78,0.1))',
                       border: '1px solid var(--border-gold)',
                       borderRadius: 8,
-                      padding: '12px 16px',
-                      marginBottom: 8,
+                      padding: '10px 14px',
+                      marginBottom: 6,
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
                     }}
                   >
-                    <div>
-                      <span style={{ fontSize: '1.2rem', marginRight: 8 }}>{event.template.icon}</span>
-                      <strong style={{ color: 'var(--gold)' }}>{event.template.name}</strong>
-                      <span style={{ marginLeft: 8, color: 'var(--text-secondary)' }}>
-                        {event.template.description}
-                      </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: '1.1rem' }}>{event.template.icon}</span>
+                      <div>
+                        <strong style={{ color: 'var(--gold)', fontSize: '0.9rem' }}>{event.template.name}</strong>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                          {event.template.description}
+                        </div>
+                      </div>
                     </div>
                     {!event.is_claimed && (
                       <RPGButton size="small" onClick={() => randomEvents.claimEvent(event.id)}>
@@ -261,82 +268,142 @@ function AppContent({ activeTab, setActiveTab }: { activeTab: TabId; setActiveTa
               </div>
             )}
 
-            <DailyQuestsPanel
-              quests={dailyQuests.quests}
-              loading={dailyQuests.loading}
-              allCompleted={dailyQuests.allCompleted}
-              completedCount={dailyQuests.completedCount}
-              bonusClaimed={dailyQuests.bonusClaimed}
-              bonusXp={dailyQuests.bonusXp}
-              totalXpEarned={dailyQuests.totalXpEarned}
-              onClaimBonus={async () => {
-                await dailyQuests.claimBonus();
-                // Deal damage for each completed daily quest
-                for (const quest of dailyQuests.quests) {
-                  if (quest.is_completed) {
-                    weeklyBoss.dealDamage('daily_quest_completed', `Daily Quest: ${quest.title}`);
+            {/* Accordion Sections */}
+            <AccordionSection
+              title="Today's Tasks"
+              icon="📋"
+              badge={`${dailyQuests.completedCount}/${dailyQuests.quests.length}`}
+              badgeColor={dailyQuests.allCompleted ? 'green' : 'gold'}
+              defaultExpanded={true}
+            >
+              <DailyQuestsPanel
+                quests={dailyQuests.quests}
+                loading={dailyQuests.loading}
+                allCompleted={dailyQuests.allCompleted}
+                completedCount={dailyQuests.completedCount}
+                bonusClaimed={dailyQuests.bonusClaimed}
+                bonusXp={dailyQuests.bonusXp}
+                totalXpEarned={dailyQuests.totalXpEarned}
+                onClaimBonus={async () => {
+                  await dailyQuests.claimBonus();
+                  for (const quest of dailyQuests.quests) {
+                    if (quest.is_completed) {
+                      weeklyBoss.dealDamage('daily_quest_completed', `Daily Quest: ${quest.title}`);
+                    }
                   }
-                }
-              }}
-            />
+                }}
+                compact
+              />
+              {routines.routines.length > 0 && (
+                <div style={{ marginTop: 16 }}>
+                  <RoutinePanel
+                    routines={routines.routines}
+                    loading={routines.loading}
+                    onCreateRoutine={routines.createRoutine}
+                    onDeleteRoutine={routines.deleteRoutine}
+                    onStartRoutine={routines.startRoutine}
+                    onCompleteStep={routines.completeStep}
+                    onSkipStep={routines.skipStep}
+                    onAddStep={routines.addStep}
+                    onDeleteStep={routines.deleteStep}
+                    getStepsWithStatus={routines.getStepsWithStatus}
+                    compact
+                  />
+                </div>
+              )}
+            </AccordionSection>
 
-            {/* Routines Panel */}
-            <RoutinePanel
-              routines={routines.routines}
-              loading={routines.loading}
-              onCreateRoutine={routines.createRoutine}
-              onDeleteRoutine={routines.deleteRoutine}
-              onStartRoutine={routines.startRoutine}
-              onCompleteStep={routines.completeStep}
-              onSkipStep={routines.skipStep}
-              onAddStep={routines.addStep}
-              onDeleteStep={routines.deleteStep}
-              getStepsWithStatus={routines.getStepsWithStatus}
-            />
+            <AccordionSection
+              title="Weekly Boss"
+              icon="🐉"
+              badge={weeklyBoss.boss?.is_defeated ? 'Defeated!' : `${weeklyBoss.hpPercentage}% HP`}
+              badgeColor={weeklyBoss.boss?.is_defeated ? 'green' : weeklyBoss.hpPercentage < 30 ? 'red' : 'gold'}
+              headerContent={
+                !weeklyBoss.boss?.is_defeated && (
+                  <div style={{ width: 80, height: 6, background: 'var(--bg-dark)', borderRadius: 3, overflow: 'hidden' }}>
+                    <div style={{ width: `${weeklyBoss.hpPercentage}%`, height: '100%', background: weeklyBoss.hpPercentage < 30 ? '#ef4444' : '#22c55e', borderRadius: 3 }} />
+                  </div>
+                )
+              }
+            >
+              <WeeklyBossPanel
+                boss={weeklyBoss.boss}
+                loading={weeklyBoss.loading}
+                weekStart={weeklyBoss.weekStart}
+                weekEnd={weeklyBoss.weekEnd}
+                hpPercentage={weeklyBoss.hpPercentage}
+                damageDealt={weeklyBoss.damageDealt}
+                totalDefeated={weeklyBoss.totalDefeated}
+                compact
+              />
+            </AccordionSection>
 
-            {/* Combos Display */}
-            <ComboDisplay
-              combos={combos.combos}
-              loading={combos.loading}
-              onClaimCombo={combos.claimCombo}
-            />
+            {combos.combos.length > 0 && (
+              <AccordionSection
+                title="Combos"
+                icon="⚡"
+                badge={combos.combos.filter(c => c.is_ready).length > 0 ? `${combos.combos.filter(c => c.is_ready).length} ready!` : undefined}
+                badgeColor="green"
+              >
+                <ComboDisplay
+                  combos={combos.combos}
+                  loading={combos.loading}
+                  onClaimCombo={combos.claimCombo}
+                  compact
+                />
+              </AccordionSection>
+            )}
 
-            <WeeklyBossPanel
-              boss={weeklyBoss.boss}
-              loading={weeklyBoss.loading}
-              weekStart={weeklyBoss.weekStart}
-              weekEnd={weeklyBoss.weekEnd}
-              hpPercentage={weeklyBoss.hpPercentage}
-              damageDealt={weeklyBoss.damageDealt}
-              totalDefeated={weeklyBoss.totalDefeated}
-            />
+            <AccordionSection
+              title="Character Stats"
+              icon="⚔️"
+              badge={`Lv.${char.character.level}`}
+              badgeColor="gold"
+            >
+              <CharacterScreen
+                character={char.character}
+                stats={buffs.stats}
+                activeBuffs={buffs.activeBuffs}
+                xpLog={char.xpLog}
+                onNameChange={char.setName}
+                compact
+              />
+            </AccordionSection>
 
-            {/* Weekly Review */}
-            <WeeklyReviewPanel
-              currentReview={weeklyReview.currentReview}
-              loading={weeklyReview.loading}
-              onGenerateSummary={weeklyReview.generateSummary}
-              onUpdateContent={weeklyReview.updateContent}
-              onCompleteReview={weeklyReview.completeReview}
-              getSummaryFromReview={weeklyReview.getSummaryFromReview}
-              getPrioritiesFromReview={weeklyReview.getPrioritiesFromReview}
-              getWeekStart={weeklyReview.getWeekStart}
-            />
+            <AccordionSection
+              title="Achievements"
+              icon="🏆"
+              badge={`${achievements.stats.unlocked}/${achievements.stats.total}`}
+              badgeColor={achievements.stats.unlocked === achievements.stats.total ? 'green' : 'gold'}
+            >
+              <AchievementPanel
+                achievements={achievements.achievements}
+                stats={achievements.stats}
+                loading={achievements.loading}
+                compact
+              />
+            </AccordionSection>
 
-            <CharacterScreen
-              character={char.character}
-              stats={buffs.stats}
-              activeBuffs={buffs.activeBuffs}
-              xpLog={char.xpLog}
-              onNameChange={char.setName}
-            />
-
-            {/* Achievement Summary */}
-            <AchievementPanel
-              achievements={achievements.achievements}
-              stats={achievements.stats}
-              loading={achievements.loading}
-            />
+            {!weeklyReview.currentReview?.is_completed && (
+              <AccordionSection
+                title="Weekly Review"
+                icon="📝"
+                badge="Due"
+                badgeColor="blue"
+              >
+                <WeeklyReviewPanel
+                  currentReview={weeklyReview.currentReview}
+                  loading={weeklyReview.loading}
+                  onGenerateSummary={weeklyReview.generateSummary}
+                  onUpdateContent={weeklyReview.updateContent}
+                  onCompleteReview={weeklyReview.completeReview}
+                  getSummaryFromReview={weeklyReview.getSummaryFromReview}
+                  getPrioritiesFromReview={weeklyReview.getPrioritiesFromReview}
+                  getWeekStart={weeklyReview.getWeekStart}
+                  compact
+                />
+              </AccordionSection>
+            )}
           </>
         )}
 

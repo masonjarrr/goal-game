@@ -17,6 +17,7 @@ interface CharacterScreenProps {
   activeBuffs: ActiveBuff[];
   xpLog: XPLogEntry[];
   onNameChange: (name: string) => void;
+  compact?: boolean;
 }
 
 const STAT_COLORS: Record<string, 'gold' | 'green' | 'blue'> = {
@@ -27,7 +28,7 @@ const STAT_COLORS: Record<string, 'gold' | 'green' | 'blue'> = {
   charisma: 'gold',
 };
 
-export function CharacterScreen({ character, stats, activeBuffs, xpLog, onNameChange }: CharacterScreenProps) {
+export function CharacterScreen({ character, stats, activeBuffs, xpLog, onNameChange, compact = false }: CharacterScreenProps) {
   const xpProgress = getXPProgress(character.total_xp);
   const [editingName, setEditingName] = useState(false);
   const [nameInput, setNameInput] = useState(character.name);
@@ -49,6 +50,77 @@ export function CharacterScreen({ character, stats, activeBuffs, xpLog, onNameCh
     const mins = Math.floor((diff % 3600000) / 60000);
     if (hours > 0) return `${hours}h ${mins}m remaining`;
     return `${mins}m remaining`;
+  }
+
+  // Compact mode: Just show stats and active buffs
+  if (compact) {
+    return (
+      <div className={styles.compactScreen}>
+        <div className={styles.compactStats}>
+          <div className={styles.compactStatsTitle}>Stats</div>
+          <div className={styles.compactStatsGrid}>
+            {STAT_NAMES.map((stat) => (
+              <div key={stat} className={styles.compactStatItem}>
+                <span className={styles.compactStatName}>{stat}</span>
+                <RPGProgressBar
+                  value={stats[stat]}
+                  max={30}
+                  showValue={false}
+                  color={STAT_COLORS[stat] || 'gold'}
+                />
+                <span className={styles.compactStatValue}>{stats[stat]}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {activeBuffs.length > 0 && (
+          <div className={styles.compactBuffs}>
+            <div className={styles.compactBuffsTitle}>Active Effects ({activeBuffs.length})</div>
+            <div className={styles.compactBuffsList}>
+              {activeBuffs.map((buff) => {
+                const effects = parseStatEffects(buff.stat_effects);
+                const effectStr = Object.entries(effects)
+                  .map(([k, v]) => `${v > 0 ? '+' : ''}${v} ${k}`)
+                  .join(', ');
+                return (
+                  <div
+                    key={buff.id}
+                    className={`${styles.compactBuff} ${buff.type === 'buff' ? styles.buffType : styles.debuffType}`}
+                  >
+                    <span className={styles.compactBuffIcon}>{buff.icon}</span>
+                    <span className={styles.compactBuffName}>{buff.name}</span>
+                    <span className={styles.compactBuffTimer}>{getRemainingTime(buff.expires_at)}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        <RPGButton
+          size="small"
+          variant="ghost"
+          onClick={() => setShowXpHistory(!showXpHistory)}
+          style={{ marginTop: 12 }}
+        >
+          {showXpHistory ? 'Hide XP History' : 'Show XP History'}
+        </RPGButton>
+
+        {showXpHistory && xpLog.length > 0 && (
+          <div className={styles.compactXpLog}>
+            {xpLog.slice(0, 10).map((entry) => (
+              <div key={entry.id} className={styles.compactXpEntry}>
+                <span>{entry.reason}</span>
+                <span className={entry.amount > 0 ? styles.positive : styles.negative}>
+                  {entry.amount > 0 ? '+' : ''}{entry.amount} XP
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
   }
 
   return (

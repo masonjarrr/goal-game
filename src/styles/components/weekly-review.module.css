@@ -262,3 +262,59 @@
     flex-direction: column;
   }
 }
+
+/* Compact mode styles */
+.compactPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.compactMessage {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.compactCompletedBanner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, rgba(46, 204, 113, 0.15), rgba(46, 204, 113, 0.08));
+  border: 1px solid rgba(46, 204, 113, 0.3);
+  border-radius: 6px;
+  color: var(--buff-color);
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+}
+
+.compactSummary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.compactStat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: var(--bg-dark);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.compactStat span {
+  font-size: 0.9rem;
+}
+
+.compactActions {
+  display: flex;
+  justify-content: center;
+  margin-top: 4px;
+}

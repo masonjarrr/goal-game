@@ -205,6 +205,53 @@
   }
 }
 
+/* Size variants */
+.small {
+  width: 64px;
+  height: 64px;
+  margin: 0;
+}
+
+.small .spriteCanvas {
+  width: 64px;
+  height: 64px;
+}
+
+.small .auraStamina {
+  width: 70px;
+  height: 70px;
+}
+
+.small .auraWillpower {
+  width: 60px;
+  height: 60px;
+}
+
+.small .auraHealth {
+  width: 65px;
+  height: 65px;
+}
+
+.small .auraFocus {
+  width: 25px;
+  height: 25px;
+}
+
+.small .auraCharisma {
+  width: 70px;
+  height: 70px;
+}
+
+.large {
+  width: 160px;
+  height: 160px;
+}
+
+.large .spriteCanvas {
+  width: 160px;
+  height: 160px;
+}
+
 /* Mobile responsive sizing */
 @media (max-width: 768px) {
   .spriteContainer {

@@ -13,6 +13,7 @@ interface WeeklyReviewPanelProps {
   getSummaryFromReview: (review: WeeklyReview) => WeeklySummaryData;
   getPrioritiesFromReview: (review: WeeklyReview) => string[];
   getWeekStart: () => string;
+  compact?: boolean;
 }
 
 export function WeeklyReviewPanel({
@@ -24,6 +25,7 @@ export function WeeklyReviewPanel({
   getSummaryFromReview,
   getPrioritiesFromReview,
   getWeekStart,
+  compact = false,
 }: WeeklyReviewPanelProps) {
   const [wins, setWins] = useState('');
   const [challenges, setChallenges] = useState('');
@@ -85,6 +87,63 @@ export function WeeklyReviewPanel({
       <RPGPanel header="Weekly Review">
         <div className={styles.emptyState}>Loading...</div>
       </RPGPanel>
+    );
+  }
+
+  // Compact mode for accordion display
+  if (compact) {
+    const isCompleted = currentReview?.is_completed;
+    const summary = currentReview ? getSummaryFromReview(currentReview) : summaryData;
+
+    if (!currentReview && !summaryData) {
+      return (
+        <div className={styles.compactPanel}>
+          <p className={styles.compactMessage}>Generate your weekly summary to review your progress!</p>
+          <RPGButton
+            variant="primary"
+            size="small"
+            onClick={handleGenerate}
+            disabled={generating}
+          >
+            {generating ? 'Generating...' : 'Generate Summary'}
+          </RPGButton>
+        </div>
+      );
+    }
+
+    return (
+      <div className={styles.compactPanel}>
+        {isCompleted && (
+          <div className={styles.compactCompletedBanner}>
+            ✓ Completed (+{currentReview?.xp_earned || WEEKLY_REVIEW_XP} XP)
+          </div>
+        )}
+
+        {summary && (
+          <div className={styles.compactSummary}>
+            <div className={styles.compactStat}>
+              <span>📋</span> {summary.steps_completed} Steps
+            </div>
+            <div className={styles.compactStat}>
+              <span>✅</span> {summary.quests_completed} Quests
+            </div>
+            <div className={styles.compactStat}>
+              <span>⭐</span> {summary.xp_earned} XP
+            </div>
+            <div className={styles.compactStat}>
+              <span>🎯</span> {summary.focus_sessions} Focus
+            </div>
+          </div>
+        )}
+
+        {!isCompleted && (
+          <div className={styles.compactActions}>
+            <RPGButton variant="primary" size="small" onClick={handleComplete}>
+              Complete Review (+{WEEKLY_REVIEW_XP} XP)
+            </RPGButton>
+          </div>
+        )}
+      </div>
     );
   }
 

@@ -13,6 +13,7 @@ interface DailyQuestsPanelProps {
   bonusXp: number;
   totalXpEarned: number;
   onClaimBonus: () => void;
+  compact?: boolean;
 }
 
 export function DailyQuestsPanel({
@@ -23,8 +24,41 @@ export function DailyQuestsPanel({
   bonusClaimed,
   bonusXp,
   onClaimBonus,
+  compact = false,
 }: DailyQuestsPanelProps) {
   const [expanded, setExpanded] = useState(false);
+
+  // Compact mode: render content directly without wrapper
+  if (compact) {
+    if (loading) {
+      return <div className={styles.loading}>Loading daily quests...</div>;
+    }
+    if (quests.length === 0) {
+      return <div className={styles.emptyState}>No daily quests available</div>;
+    }
+    return (
+      <div className={styles.compactPanel}>
+        <div className={styles.questsList}>
+          {quests.map((quest) => (
+            <QuestItem key={quest.id} quest={quest} compact />
+          ))}
+        </div>
+        {allCompleted && !bonusClaimed && (
+          <div className={styles.compactBonus}>
+            <span>All quests complete!</span>
+            <RPGButton size="small" onClick={onClaimBonus}>
+              Claim +{bonusXp} XP
+            </RPGButton>
+          </div>
+        )}
+        {bonusClaimed && (
+          <div className={styles.compactBonusClaimed}>
+            ✓ Bonus claimed! +{bonusXp} XP
+          </div>
+        )}
+      </div>
+    );
+  }
 
   const buttonLabel = loading
     ? 'Daily Quests (Loading...)'
@@ -93,11 +127,28 @@ export function DailyQuestsPanel({
   );
 }
 
-function QuestItem({ quest }: { quest: DailyQuest }) {
+function QuestItem({ quest, compact = false }: { quest: DailyQuest; compact?: boolean }) {
   const progress = Math.min(
     (quest.current_value / quest.target_value) * 100,
     100
   );
+
+  if (compact) {
+    return (
+      <div className={`${styles.questItemCompact} ${quest.is_completed ? styles.completed : ''}`}>
+        <div className={styles.questCheckboxCompact}>
+          {quest.is_completed ? '✓' : '○'}
+        </div>
+        <span className={styles.questNameCompact}>{quest.title}</span>
+        <div className={styles.progressBarCompact}>
+          <div className={styles.progressFillCompact} style={{ width: `${progress}%` }} />
+        </div>
+        <span className={styles.progressTextCompact}>
+          {quest.current_value}/{quest.target_value}
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div

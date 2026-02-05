@@ -12,6 +12,7 @@ interface WeeklyBossPanelProps {
   hpPercentage: number;
   damageDealt: number;
   totalDefeated: number;
+  compact?: boolean;
 }
 
 export function WeeklyBossPanel({
@@ -22,6 +23,7 @@ export function WeeklyBossPanel({
   hpPercentage,
   damageDealt,
   totalDefeated,
+  compact = false,
 }: WeeklyBossPanelProps) {
   const [expanded, setExpanded] = useState(false);
 
@@ -29,6 +31,49 @@ export function WeeklyBossPanel({
     const d = new Date(dateStr + 'T12:00:00');
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
+
+  // Compact mode rendering
+  if (compact) {
+    if (loading) return <div className={styles.loading}>Loading boss...</div>;
+    if (!boss) return <div className={styles.loading}>No boss found</div>;
+
+    return (
+      <div className={styles.compactBoss}>
+        <div className={styles.compactHeader}>
+          <span className={`${styles.compactIcon} ${boss.is_defeated ? styles.defeated : ''}`}>
+            {boss.icon}
+          </span>
+          <div className={styles.compactInfo}>
+            <div className={styles.compactName}>{boss.name}</div>
+            <div className={styles.compactDesc}>{boss.description}</div>
+          </div>
+          <div className={styles.compactReward}>+{boss.xp_reward} XP</div>
+        </div>
+
+        {boss.is_defeated ? (
+          <div className={styles.compactVictory}>
+            <span>🎉</span> Victory! Boss defeated this week!
+          </div>
+        ) : (
+          <div className={styles.compactHp}>
+            <div className={styles.compactHpBar}>
+              <div
+                className={`${styles.compactHpFill} ${hpPercentage < 30 ? styles.low : ''}`}
+                style={{ width: `${hpPercentage}%` }}
+              />
+            </div>
+            <span className={styles.compactHpText}>{boss.current_hp}/{boss.max_hp} HP</span>
+          </div>
+        )}
+
+        <div className={styles.compactStats}>
+          <span>Damage dealt: {damageDealt}</span>
+          <span>•</span>
+          <span>Bosses defeated: {totalDefeated}</span>
+        </div>
+      </div>
+    );
+  }
 
   const buttonLabel = loading
     ? 'Weekly Boss (Loading...)'

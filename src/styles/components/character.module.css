@@ -188,3 +188,142 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Compact mode styles */
+.compactScreen {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.compactStats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.compactStatsTitle {
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.compactStatsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.compactStatItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.compactStatName {
+  width: 80px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-transform: capitalize;
+}
+
+.compactStatItem > *:nth-child(2) {
+  flex: 1;
+}
+
+.compactStatValue {
+  width: 30px;
+  text-align: right;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.compactBuffs {
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+}
+
+.compactBuffsTitle {
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.compactBuffsList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.compactBuff {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--bg-dark);
+  border-radius: 6px;
+  border-left: 3px solid var(--gold);
+}
+
+.compactBuff.debuffType {
+  border-left-color: var(--danger);
+}
+
+.compactBuffIcon {
+  font-size: 0.9rem;
+}
+
+.compactBuffName {
+  flex: 1;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+.compactBuffTimer {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.compactXpLog {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+  padding: 10px;
+  background: var(--bg-dark);
+  border-radius: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.compactXpEntry {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.compactXpEntry:last-child {
+  border-bottom: none;
+}
+
+.compactXpEntry span:first-child {
+  color: var(--text-secondary);
+}
+
+.compactXpEntry .positive {
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.compactXpEntry .negative {
+  color: var(--danger);
+  font-weight: 600;
+}

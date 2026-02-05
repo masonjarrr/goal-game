@@ -12,11 +12,12 @@ interface AchievementPanelProps {
   achievements: AchievementWithProgress[];
   stats: { total: number; unlocked: number; totalXp: number; earnedXp: number };
   loading?: boolean;
+  compact?: boolean;
 }
 
 const CATEGORIES: AchievementCategory[] = ['quests', 'buffs', 'streaks', 'boss', 'levels', 'special'];
 
-export function AchievementPanel({ achievements, stats, loading }: AchievementPanelProps) {
+export function AchievementPanel({ achievements, stats, loading, compact = false }: AchievementPanelProps) {
   const [selectedCategory, setSelectedCategory] = useState<AchievementCategory | 'all'>('all');
 
   const filteredAchievements =

@@ -162,15 +162,6 @@
   font-size: 0.95rem;
 }
 
-.stepActions {
-  opacity: 0;
-  transition: opacity var(--transition-fast);
-}
-
-.stepItem:hover .stepActions {
-  opacity: 1;
-}
-
 .addStepRow {
   display: flex;
   gap: 8px;
@@ -242,10 +233,4 @@
 .stepActions {
   display: flex;
   gap: 4px;
-  opacity: 0;
-  transition: opacity var(--transition-fast);
-}
-
-.stepItem:hover .stepActions {
-  opacity: 1;
 }

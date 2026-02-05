@@ -100,10 +100,16 @@ export function useQuests({ grantXP, onStepComplete, onQuestComplete, onGoalComp
 
   const uncompleteStep = useCallback(
     async (stepId: number) => {
+      // Get step info to know XP to deduct
+      const step = questRepo.getStep(stepId);
+      if (step) {
+        const xp = XP_PER_STEP[step.priority] || 10;
+        await grantXP(-xp, 'Uncompleted step', 'step_uncomplete', stepId);
+      }
       await questRepo.uncompleteStep(stepId);
       refresh();
     },
-    [refresh]
+    [refresh, grantXP]
   );
 
   const deleteStep = useCallback(

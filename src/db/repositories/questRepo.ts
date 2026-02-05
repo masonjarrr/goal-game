@@ -86,6 +86,26 @@ export async function updateQuestStatus(id: number, status: string): Promise<voi
   await persist();
 }
 
+export function getStep(stepId: number): Step | null {
+  const db = getDB();
+  const result = db.exec(
+    'SELECT id, quest_id, title, priority, status, sort_order, completed_at, missed_at FROM steps WHERE id = ?',
+    [stepId]
+  );
+  if (!result.length || !result[0].values.length) return null;
+  const row = result[0].values[0];
+  return {
+    id: row[0] as number,
+    quest_id: row[1] as number,
+    title: row[2] as string,
+    priority: row[3] as Step['priority'],
+    status: row[4] as Step['status'],
+    sort_order: row[5] as number,
+    completed_at: row[6] as string | null,
+    missed_at: row[7] as string | null,
+  };
+}
+
 export function getSteps(questId: number): Step[] {
   const db = getDB();
   const result = db.exec(
